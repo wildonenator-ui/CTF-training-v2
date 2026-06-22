@@ -413,7 +413,7 @@ body{background:var(--bg);color:var(--t);font-family:system-ui,sans-serif;displa
     <div class="result" id="r8"></div>
     <div class="special-msg" id="special8">
       <div class="flag-accepted">FLAG ACCEPTED.</div>
-      1つのサービスから漏れたパスワードが別のサービスでも使い回されていると、同じパスワードでログインされる可能性があります。1つのパスワードを複数のアカウントに試す攻撃は、パスワードスプレー攻撃やクレデンシャルスタッフィングにつながります。<br><br>対策として、サービスごとに異なるパスワードを使うこと、パスワードマネージャーを使うこと、多要素認証（MFA）を有効にすることが重要です。
+      1つのサービスから漏れたパスワードが別のサービスでも使い回されていると、同じパスワードでログインされる可能性があります。<br><br>1つのよく使われるパスワードを複数のアカウントに試す攻撃は、パスワードスプレー攻撃と呼ばれます。また、漏えいしたIDとパスワードの組み合わせを別サービスに試す攻撃は、クレデンシャルスタッフィングと呼ばれます。<br><br>対策として、サービスごとに異なるパスワードを使うこと、パスワードマネージャーを使うこと、多要素認証（MFA）を有効にすることが重要です。
     </div>
   </div>
 
@@ -426,15 +426,14 @@ body{background:var(--bg);color:var(--t);font-family:system-ui,sans-serif;displa
     </div>
     <div class="q-title">漏えい後の対応</div>
     <div class="concept">&#128161; <strong>Auth</strong> — パスワードが漏れたときは、被害を広げないための正しい対応が大切です。MFAは「もう一つのカギ」になります。</div>
-    <p class="desc">あるアカウントのパスワードが漏えいした可能性があります。被害を広げないために、取るべき対応を確認しましょう。次の対応候補のうち、<strong>正しい対応の数</strong>を入力してください。</p>
+    <p class="desc">あるアカウントのパスワードが漏えいした可能性があります。被害を広げないために、取るべき対応を確認しましょう。次の対応候補のうち、<strong>漏えい後に取るべき対応だけ</strong>を選んでください。</p>
     <div class="demo">
-      <label class="choice"><input type="checkbox"/><span>パスワードを変更する</span></label>
-      <label class="choice"><input type="checkbox"/><span>同じパスワードを使っている他サービスのパスワードも変更する</span></label>
-      <label class="choice"><input type="checkbox"/><span>MFAを有効にする</span></label>
-      <label class="choice"><input type="checkbox"/><span>漏えいしたパスワードをそのまま使い続ける</span></label>
-      <label class="choice"><input type="checkbox"/><span>SNSで「このパスワードを使っていた」と投稿する</span></label>
-      <label class="choice"><input type="checkbox"/><span>不審なログイン履歴がないか確認する</span></label>
-      <div class="field"><label for="cnt9">正しい対応の数</label><input class="demo-input" id="cnt9" placeholder="数字を入力" inputmode="numeric" autocomplete="off" maxlength="2"/></div>
+      <label class="choice"><input type="checkbox" data-q9="correct"/><span>パスワードを変更する</span></label>
+      <label class="choice"><input type="checkbox" data-q9="correct"/><span>同じパスワードを使っている他サービスのパスワードも変更する</span></label>
+      <label class="choice"><input type="checkbox" data-q9="correct"/><span>MFAを有効にする</span></label>
+      <label class="choice"><input type="checkbox" data-q9="wrong"/><span>漏えいしたパスワードをそのまま使い続ける</span></label>
+      <label class="choice"><input type="checkbox" data-q9="wrong"/><span>SNSで「このパスワードを使っていた」と投稿する</span></label>
+      <label class="choice"><input type="checkbox" data-q9="correct"/><span>不審なログイン履歴がないか確認する</span></label>
       <button class="demo-btn" onclick="check9()">確認する</button>
       <div class="demo-out" id="o9"></div>
     </div>
@@ -448,7 +447,7 @@ body{background:var(--bg);color:var(--t);font-family:system-ui,sans-serif;displa
       </div>
       <div class="setup-step">
         <div class="setup-step-title">&#9313; 多要素認証（MFA）を設定</div>
-        <div style="font-size:.82rem;color:var(--m);line-height:1.6">認証アプリ（Authenticator）で下のQRコードを読み取り、表示された6桁コードを登録します。</div>
+        <div style="font-size:.82rem;color:var(--m);line-height:1.6">実際のMFA設定では、認証アプリでQRコードを読み取り、表示された6桁コードを登録します。この演習では、QRコードを読み取るとFlagが表示されます。</div>
         <div class="qr-box"><div class="qr-img" id="qr9"></div></div>
         <div class="notice">&#9888;&#65039; このQRコードは演習用です。実際に認証アプリへ登録する必要はありません。読み取って表示されたFlagを入力してください。</div>
       </div>
@@ -458,7 +457,7 @@ body{background:var(--bg);color:var(--t);font-family:system-ui,sans-serif;displa
       <ol>
         <li>漏えい後は、まず被害を広げないことが重要です。</li>
         <li>使い回しているパスワードがあれば、他のサービスも危険です。</li>
-        <li>正しい対応は4つあります。</li>
+        <li>「使い続ける」「SNSで共有する」は危険な対応です。</li>
       </ol>
     </div>
     <div class="flag-wrap">
@@ -643,6 +642,7 @@ WHERE username = ''
 <script>
 const TOTAL=12,PTS={1:50,2:75,3:75,4:100,5:100,6:150,7:100,8:100,9:100,10:150,11:150,12:200};
 const TOTALPTS=Object.values(PTS).reduce((a,b)=>a+b,0);
+const STORAGE_KEY='ctf-exp-v2';
 const solved={};let cur=1;
 
 const dotsEl=document.getElementById('dots');
@@ -688,14 +688,14 @@ function check(n,correct){
 }
 
 function saveState(n,val){
-  const data=JSON.parse(localStorage.getItem('ctf-exp')||'{}');
+  const data=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
   data[n]=val;
-  localStorage.setItem('ctf-exp',JSON.stringify(data));
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
 }
 
 function loadState(){
   try{
-    const data=JSON.parse(localStorage.getItem('ctf-exp')||'{}');
+    const data=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
     for(const k in data){
       const n=parseInt(k);
       const inp=document.getElementById('f'+n);
@@ -744,7 +744,7 @@ function runCode(){
 }
 
 function resetAll(){
-  localStorage.removeItem('ctf-exp');
+  localStorage.removeItem(STORAGE_KEY);
   for(const k in solved) delete solved[k];
   for(let i=1;i<=TOTAL;i++){
     const inp=document.getElementById('f'+i);
@@ -809,9 +809,11 @@ function login8(){
 }
 
 function check9(){
-  const v=document.getElementById('cnt9').value.trim();
-  if(v==='4'){setOut('o9',true,'✓ 正解です。正しい対応は4つ。MFA設定画面を表示します。');document.getElementById('rv9').classList.add('show');renderQR9();}
-  else setOut('o9',false,'✗ もう一度、危険な対応を除いて数えてみましょう。');
+  let allCorrect=true,anyWrong=false;
+  document.querySelectorAll('#s9 input[data-q9="correct"]').forEach(c=>{if(!c.checked)allCorrect=false;});
+  document.querySelectorAll('#s9 input[data-q9="wrong"]').forEach(c=>{if(c.checked)anyWrong=true;});
+  if(allCorrect&&!anyWrong){setOut('o9',true,'✓ 正解です。漏えい後に取るべき対応を確認できました。MFA設定画面を表示します。');document.getElementById('rv9').classList.add('show');renderQR9();}
+  else setOut('o9',false,'✗ もう一度、漏えい後に取るべき対応だけを選んでみましょう。');
 }
 function renderQR9(){
   const box=document.getElementById('qr9');
