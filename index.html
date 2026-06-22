@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'self';" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <title>CTF Training Toolkit</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --accent: #58a6ff;
+      --accent2: #3fb950;
+      --warn: #f78166;
+      --text: #c9d1d9;
+      --muted: #8b949e;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    header h1 {
+      font-size: 1.4rem;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+    }
+
+    header .badge {
+      background: #1f6feb33;
+      color: var(--accent);
+      border: 1px solid #1f6feb;
+      border-radius: 12px;
+      padding: 2px 10px;
+      font-size: 0.75rem;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 0.75rem 1.25rem;
+      font-size: 0.9rem;
+      white-space: nowrap;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .tab-btn:hover { color: var(--text); }
+
+    .tab-btn.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .tab-panel { display: none; padding: 2rem; max-width: 900px; margin: 0 auto; }
+    .tab-panel.active { display: block; }
+
+    .tool-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+    }
+
+    .card h3 {
+      font-size: 0.9rem;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    textarea, input[type="text"], input[type="number"], select {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+      font-size: 0.85rem;
+      padding: 0.6rem 0.75rem;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    textarea:focus, input:focus, select:focus {
+      border-color: var(--accent);
+    }
+
+    textarea { min-height: 90px; }
+
+    .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      margin: 0.6rem 0;
+      flex-wrap: wrap;
+    }
+
+    button.btn {
+      background: #1f6feb;
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 0.82rem;
+      padding: 0.45rem 0.9rem;
+      transition: background 0.15s;
+    }
+
+    button.btn:hover { background: #388bfd; }
+    button.btn.secondary { background: #21262d; border: 1px solid var(--border); color: var(--text); }
+    button.btn.secondary:hover { background: #30363d; }
+    button.btn.danger { background: #da3633; }
+    button.btn.danger:hover { background: #f85149; }
+    button.btn.success { background: #238636; }
+    button.btn.success:hover { background: #2ea043; }
+
+    .output {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--accent2);
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+      font-size: 0.82rem;
+      min-height: 60px;
+      padding: 0.6rem 0.75rem;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: 0.78rem;
+      margin-bottom: 0.3rem;
+      margin-top: 0.6rem;
+    }
+
+    .row { display: flex; gap: 0.5rem; align-items: center; margin: 0.4rem 0; }
+    .row label { color: var(--muted); font-size: 0.82rem; white-space: nowrap; }
+    .row input, .row select { flex: 1; }
+
+    .challenge-list { list-style: none; }
+    .challenge-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 0.6rem;
+      padding: 0.9rem 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .challenge-item.solved { border-left: 3px solid var(--accent2); }
+    .challenge-item.unsolved { border-left: 3px solid var(--warn); }
+
+    .cat-badge {
+      border-radius: 12px;
+      font-size: 0.72rem;
+      padding: 2px 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .cat-web    { background:#1f6feb33; color:#58a6ff; border:1px solid #1f6feb55; }
+    .cat-pwn    { background:#da363333; color:#f85149; border:1px solid #da363355; }
+    .cat-crypto { background:#388bfd33; color:#79c0ff; border:1px solid #388bfd55; }
+    .cat-rev    { background:#8957e533; color:#d2a8ff; border:1px solid #8957e555; }
+    .cat-misc   { background:#1abc9c33; color:#56d364; border:1px solid #1abc9c55; }
+    .cat-forensics { background:#e3b34133; color:#e3b341; border:1px solid #e3b34155; }
+
+    .challenge-name { flex: 1; font-size: 0.9rem; }
+    .challenge-pts  { color: var(--muted); font-size: 0.82rem; }
+    .solve-check { cursor: pointer; width: 16px; height: 16px; accent-color: var(--accent2); }
+
+    .stat-bar { display: flex; gap: 1.5rem; margin-bottom: 1.5rem; }
+    .stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      flex: 1;
+      padding: 1rem;
+      text-align: center;
+    }
+    .stat .num { color: var(--accent); font-size: 1.8rem; font-weight: 700; }
+    .stat .lbl { color: var(--muted); font-size: 0.78rem; }
+
+    .progress-bar {
+      background: var(--border);
+      border-radius: 4px;
+      height: 8px;
+      margin: 0.5rem 0;
+      overflow: hidden;
+    }
+    .progress-fill {
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 4px;
+      height: 100%;
+      transition: width 0.4s ease;
+    }
+
+    #copy-toast {
+      background: var(--surface);
+      border: 1px solid var(--accent2);
+      border-radius: 6px;
+      bottom: 2rem;
+      color: var(--accent2);
+      display: none;
+      font-size: 0.85rem;
+      padding: 0.5rem 1.2rem;
+      position: fixed;
+      right: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>&#128272; CTF Training Toolkit</h1>
+  <span class="badge">v1.0</span>
+  <a href="ctf-experience.html" style="margin-left:auto;background:#238636;border:none;border-radius:6px;color:#fff;cursor:pointer;font-size:.8rem;padding:.4rem .9rem;text-decoration:none;">&#127939; CTF体験</a>
+</header>
+
+<nav class="tabs">
+  <button class="tab-btn active" onclick="switchTab(event,'encode')">Encode / Decode</button>
+  <button class="tab-btn" onclick="switchTab(event,'cipher')">Cipher</button>
+  <button class="tab-btn" onclick="switchTab(event,'hash')">Hash</button>
+  <button class="tab-btn" onclick="switchTab(event,'number')">Number</button>
+  <button class="tab-btn" onclick="switchTab(event,'tracker')">Challenge Tracker</button>
+</nav>
+
+<!-- ========== ENCODE / DECODE ========== -->
+<div id="tab-encode" class="tab-panel active">
+  <div class="tool-grid">
+
+    <div class="card">
+      <h3>Base64</h3>
+      <div class="label">Input</div>
+      <textarea id="b64-in" placeholder="テキストまたはBase64を入力..."></textarea>
+      <div class="btn-row">
+        <button class="btn" onclick="b64Encode()">Encode</button>
+        <button class="btn secondary" onclick="b64Decode()">Decode</button>
+        <button class="btn secondary" onclick="clearField('b64-in','b64-out')">Clear</button>
+      </div>
+      <div class="label">Output</div>
+      <div class="output" id="b64-out"></div>
+      <div class="btn-row"><button class="btn secondary" onclick="copyOut('b64-out')">Copy</button></div>
+    </div>
+
+    <div class="card">
+      <h3>URL Encode</h3>
+      <div class="label">Input</div>
+      <textarea id="url-in" placeholder="テキストまたはURLを入力..."></textarea>
+      <div class="btn-row">
+        <button class="btn" onclick="urlEncode()">Encode</button>
+        <button class="btn secondary" onclick="urlDecode()">Decode</button>
+        <button class="btn secondary" onclick="clearField('url-in','url-out')">Clear</button>
+      </div>
+      <div class="label">Output</div>
+      <div class="output" id="url-out"></div>
+      <div class="btn-row"><button class="btn secondary" onclick="copyOut('url-out')">Copy</button></div>
+    </div>
+
+    <div class="card">
+      <h3>Hex Encode</h3>
+      <div class="label">Input</div>
+      <textarea id="hex-in" placeholder="テキストまたは16進数..."></textarea>
+      <div class="btn-row">
+        <button class="btn" onclick="hexEncode()">Text → Hex</button>
+        <button class="btn secondary" onclick="hexDecode()">Hex → Text</button>
+        <button class="btn secondary" onclick="clearField('hex-in','hex-out')">Clear</button>
+      </div>
+      <div class="label">Output</div>
+      <div class="output" id="hex-out"></div>
+      <div class="btn-row"><button class="btn secondary" onclick="copyOut('hex-out')">Copy</button></div>
+    </div>
+
+    <div class="card">
+      <h3>Binary</h3>
+      <div class="label">Input</div>
+      <textarea id="bin-in" placeholder="テキストまたは2進数 (スペース区切り)..."></textarea>
+      <div class="btn-row">
+        <button class="btn" onclick="binEncode()">Text → Binary</button>
+        <button class="btn secondary" onclick="binDecode()">Binary → Text</button>
+        <button class="btn secondary" onclick="clearField('bin-in','bin-out')">Clear</button>
+      </div>
+      <div class="label">Output</div>
+      <div class="output" id="bin-out"></div>
+      <div class="btn-row"><button class="btn secondary" onclick="copyOut('bin-out')">Copy</button></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========== CIPHER ========== -->
+<div id="tab-cipher" class="tab-panel">
+  <div class="tool-grid">
+
+    <div class="card">
+      <h3>Caesar / ROT Cipher</h3>
+      <div class="label">Input</div>
+      <textarea id="rot-in" placeholder="テキストを入力..."></textarea>
+      <div class="row">
+        <label>Shift</label>
+        <input type="number" id="rot-shift" value="13" min="1" max="25" style="width:70px;flex:none;" />
+        <button class="btn" onclick="rotEncrypt()">Encrypt</button>
+        <button class="btn secondary" onclick="rotDecrypt()">Decrypt</button>
+      </div>
+      <div class="btn-row">
+        <button class="btn secondary" onclick="rotBrute()">Brute Force All</button>
+        <button class="btn secondary" onclick="clearField('rot-in','rot-out')">Clear</button>
+      </div>
+      <div class="label">Output</div>
+      <div class="output" id="rot-out" style="min-height:100px;"></div>
+      <div class="btn-row"><button class="btn secondary" onclick="copyOut('rot-out')">Copy</button></div>
+    </div>
+
+    <div class="card">
+      <h3>Vigenere Cipher</h3>
+      <div class="label">Input</div>
+      <textarea id="vig-in" placeholder="テキストを入力..."></textarea>
+      <div class="row">
+        <label>Key</label>
+        <input type="text" id="vig-key" placeholder="キーワード" />
+      </div>
+      <div class="btn-row">
+        <button class="btn" onclick="vigEncrypt()">Encrypt</button>
+        <button class="btn secondary" onclick="vigDecrypt()">Decrypt</button>
+        <button class="btn secondary" onclick="clearField('vig-in','vig-out')">Clear</button>
+      </div>
+      <div class="label">Output</div>
+      <div class="output" id="vig-out"></div>
+      <div class="btn-row"><button class="btn secondary" onclick="copyOut('vig-out')">Copy</button></div>
+    </div>
+
+    <div class="card">
+      <h3>XOR</h3>
+      <div class="label">Input (text or hex with 0x prefix)</div>
+      <textarea id="xor-in" placeholder="テキストまたは 0x... 形式の16進数..."></textarea>
+      <div class="row">
+        <label>Key (char or hex)</label>
+        <input type="text" id="xor-key" placeholder="例: A  または  0x41" />
+      </div>
+      <div class="btn-row">
+        <button class="btn" onclick="xorRun()">XOR</button>
+        <button class="btn secondary" onclick="clearField('xor-in','xor-out')">Clear</button>
+      </div>
+      <div class="label">Output</div>
+      <div class="output" id="xor-out"></div>
+      <div class="btn-row"><button class="btn secondary" onclick="copyOut('xor-out')">Copy</button></div>
+    </div>
+
+    <div class="card">
+      <h3>Morse Code</h3>
+      <div class="label">Input</div>
+      <textarea id="morse-in" placeholder="テキストまたはモールス信号 (.- / ...)..."></textarea>
+      <div class="btn-row">
+        <button class="btn" onclick="morseEncode()">Text → Morse</button>
+        <button class="btn secondary" onclick="morseDecode()">Morse → Text</button>
+        <button class="btn secondary" onclick="clearField('morse-in','morse-out')">Clear</button>
+      </div>
+      <div class="label">Output</div>
+      <div class="output" id="morse-out"></div>
+      <div class="btn-row"><button class="btn secondary" onclick="copyOut('morse-out')">Copy</button></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========== HASH ========== -->
+<div id="tab-hash" class="tab-panel">
+  <div class="card" style="margin-bottom:1rem;">
+    <h3>Hash Generator</h3>
+    <div class="label">Input</div>
+    <textarea id="hash-in" placeholder="ハッシュ化するテキストを入力..."></textarea>
+    <div class="btn-row">
+      <button class="btn" onclick="computeHashes()">Compute All</button>
+      <button class="btn secondary" onclick="document.getElementById('hash-in').value=''; clearHashes()">Clear</button>
+    </div>
+  </div>
+
+  <div class="tool-grid" id="hash-results">
+    <div class="card"><h3>SHA-256</h3><div class="output" id="h-sha256">—</div><div class="btn-row"><button class="btn secondary" onclick="copyOut('h-sha256')">Copy</button></div></div>
+    <div class="card"><h3>SHA-1</h3><div class="output" id="h-sha1">—</div><div class="btn-row"><button class="btn secondary" onclick="copyOut('h-sha1')">Copy</button></div></div>
+    <div class="card"><h3>SHA-512</h3><div class="output" id="h-sha512" style="word-break:break-all;">—</div><div class="btn-row"><button class="btn secondary" onclick="copyOut('h-sha512')">Copy</button></div></div>
+    <div class="card"><h3>SHA-384</h3><div class="output" id="h-sha384" style="word-break:break-all;">—</div><div class="btn-row"><button class="btn secondary" onclick="copyOut('h-sha384')">Copy</button></div></div>
+  </div>
+</div>
+
+<!-- ========== NUMBER ========== -->
+<div id="tab-number" class="tab-panel">
+  <div class="tool-grid">
+
+    <div class="card">
+      <h3>Base Converter</h3>
+      <div class="row">
+        <label>From</label>
+        <select id="num-from">
+          <option value="2">Binary (2)</option>
+          <option value="8">Octal (8)</option>
+          <option value="10" selected>Decimal (10)</option>
+          <option value="16">Hex (16)</option>
+        </select>
+      </div>
+      <div class="row">
+        <label>To</label>
+        <select id="num-to">
+          <option value="2">Binary (2)</option>
+          <option value="8">Octal (8)</option>
+          <option value="10">Decimal (10)</option>
+          <option value="16" selected>Hex (16)</option>
+        </select>
+      </div>
+      <div class="label">Input</div>
+      <input type="text" id="num-in" placeholder="数値を入力..." />
+      <div class="btn-row" style="margin-top:0.5rem;">
+        <button class="btn" onclick="convertBase()">Convert</button>
+        <button class="btn secondary" onclick="document.getElementById('num-in').value='';document.getElementById('num-out').textContent=''">Clear</button>
+      </div>
+      <div class="label">Output</div>
+      <div class="output" id="num-out"></div>
+    </div>
+
+    <div class="card">
+      <h3>ASCII ↔ Decimal</h3>
+      <div class="label">Input</div>
+      <textarea id="ascii-in" placeholder="テキスト、または10進数 (スペース区切り)..."></textarea>
+      <div class="btn-row">
+        <button class="btn" onclick="asciiToDec()">ASCII → Dec</button>
+        <button class="btn secondary" onclick="decToAscii()">Dec → ASCII</button>
+        <button class="btn secondary" onclick="clearField('ascii-in','ascii-out')">Clear</button>
+      </div>
+      <div class="label">Output</div>
+      <div class="output" id="ascii-out"></div>
+      <div class="btn-row"><button class="btn secondary" onclick="copyOut('ascii-out')">Copy</button></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========== CHALLENGE TRACKER ========== -->
+<div id="tab-tracker" class="tab-panel">
+  <div class="stat-bar" id="stat-bar"></div>
+  <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+  <p class="label" id="prog-label" style="margin-bottom:1rem;"></p>
+
+  <div class="card" style="margin-bottom:1rem;">
+    <h3>Add Challenge</h3>
+    <div class="row">
+      <label>Name</label>
+      <input type="text" id="ch-name" placeholder="チャレンジ名" maxlength="100" spellcheck="false" />
+    </div>
+    <div class="row">
+      <label>Category</label>
+      <select id="ch-cat">
+        <option value="web">Web</option>
+        <option value="pwn">Pwn</option>
+        <option value="crypto">Crypto</option>
+        <option value="rev">Rev</option>
+        <option value="forensics">Forensics</option>
+        <option value="misc">Misc</option>
+      </select>
+      <label>Points</label>
+      <input type="number" id="ch-pts" value="100" min="1" style="width:80px;flex:none;" />
+    </div>
+    <div class="btn-row" style="margin-top:0.5rem;">
+      <button class="btn success" onclick="addChallenge()">Add</button>
+    </div>
+  </div>
+
+  <ul class="challenge-list" id="challenge-list"></ul>
+</div>
+
+<div id="copy-toast">Copied!</div>
+
+<script>
+// ---- Tab switching ----
+function switchTab(e, id) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  e.currentTarget.classList.add('active');
+}
+
+// ---- Helpers ----
+function setOut(id, val) { document.getElementById(id).textContent = val; }
+function clearField(inId, outId) {
+  document.getElementById(inId).value = '';
+  document.getElementById(outId).textContent = '';
+}
+function copyOut(id) {
+  const txt = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(txt).then(() => {
+    const t = document.getElementById('copy-toast');
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 1500);
+  });
+}
+function err(id, msg) { document.getElementById(id).style.color = 'var(--warn)'; setOut(id, msg); }
+function ok(id) { document.getElementById(id).style.color = 'var(--accent2)'; }
+
+// ---- Base64 ----
+function b64Encode() { ok('b64-out'); setOut('b64-out', btoa(unescape(encodeURIComponent(document.getElementById('b64-in').value)))); }
+function b64Decode() {
+  try { ok('b64-out'); setOut('b64-out', decodeURIComponent(escape(atob(document.getElementById('b64-in').value.trim())))); }
+  catch { err('b64-out', 'Invalid Base64'); }
+}
+
+// ---- URL ----
+function urlEncode() { ok('url-out'); setOut('url-out', encodeURIComponent(document.getElementById('url-in').value)); }
+function urlDecode() { try { ok('url-out'); setOut('url-out', decodeURIComponent(document.getElementById('url-in').value)); } catch { err('url-out', 'Invalid URL encoding'); } }
+
+// ---- Hex ----
+function hexEncode() {
+  ok('hex-out');
+  setOut('hex-out', Array.from(document.getElementById('hex-in').value).map(c => c.charCodeAt(0).toString(16).padStart(2,'0')).join(' '));
+}
+function hexDecode() {
+  try {
+    ok('hex-out');
+    const h = document.getElementById('hex-in').value.replace(/\s+/g,'').replace(/0x/gi,'');
+    setOut('hex-out', h.match(/.{1,2}/g).map(b => String.fromCharCode(parseInt(b,16))).join(''));
+  } catch { err('hex-out', 'Invalid hex'); }
+}
+
+// ---- Binary ----
+function binEncode() {
+  ok('bin-out');
+  setOut('bin-out', Array.from(document.getElementById('bin-in').value).map(c => c.charCodeAt(0).toString(2).padStart(8,'0')).join(' '));
+}
+function binDecode() {
+  try {
+    ok('bin-out');
+    const bits = document.getElementById('bin-in').value.trim().split(/\s+/);
+    setOut('bin-out', bits.map(b => String.fromCharCode(parseInt(b,2))).join(''));
+  } catch { err('bin-out', 'Invalid binary'); }
+}
+
+// ---- Caesar / ROT ----
+function rotChar(c, shift) {
+  if (c >= 'a' && c <= 'z') return String.fromCharCode(((c.charCodeAt(0)-97+shift)%26+26)%26+97);
+  if (c >= 'A' && c <= 'Z') return String.fromCharCode(((c.charCodeAt(0)-65+shift)%26+26)%26+65);
+  return c;
+}
+function rotEncrypt() {
+  ok('rot-out');
+  const s = parseInt(document.getElementById('rot-shift').value) || 13;
+  setOut('rot-out', Array.from(document.getElementById('rot-in').value).map(c => rotChar(c,s)).join(''));
+}
+function rotDecrypt() {
+  ok('rot-out');
+  const s = parseInt(document.getElementById('rot-shift').value) || 13;
+  setOut('rot-out', Array.from(document.getElementById('rot-in').value).map(c => rotChar(c,-s)).join(''));
+}
+function rotBrute() {
+  ok('rot-out');
+  const t = document.getElementById('rot-in').value;
+  const lines = [];
+  for (let i = 1; i <= 25; i++) lines.push(`ROT${i.toString().padStart(2,' ')}: ${Array.from(t).map(c=>rotChar(c,i)).join('')}`);
+  setOut('rot-out', lines.join('\n'));
+}
+
+// ---- Vigenere ----
+function vigProcess(text, key, enc) {
+  key = key.toUpperCase().replace(/[^A-Z]/g,'');
+  if (!key) return 'Key must contain letters';
+  let ki = 0;
+  return Array.from(text).map(c => {
+    if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
+      const base = c >= 'a' ? 97 : 65;
+      const kv = key[ki % key.length].charCodeAt(0) - 65;
+      ki++;
+      const shifted = enc ? (c.charCodeAt(0)-base+kv)%26 : ((c.charCodeAt(0)-base-kv+26)%26);
+      return String.fromCharCode(base+shifted);
+    }
+    return c;
+  }).join('');
+}
+function vigEncrypt() { ok('vig-out'); setOut('vig-out', vigProcess(document.getElementById('vig-in').value, document.getElementById('vig-key').value, true)); }
+function vigDecrypt() { ok('vig-out'); setOut('vig-out', vigProcess(document.getElementById('vig-in').value, document.getElementById('vig-key').value, false)); }
+
+// ---- XOR ----
+function xorRun() {
+  try {
+    ok('xor-out');
+    const raw = document.getElementById('xor-in').value;
+    const keyStr = document.getElementById('xor-key').value.trim();
+    let keyVal;
+    if (keyStr.startsWith('0x') || keyStr.startsWith('0X')) keyVal = parseInt(keyStr, 16);
+    else if (keyStr.length === 1) keyVal = keyStr.charCodeAt(0);
+    else { err('xor-out', 'Key must be a single char or hex like 0x41'); return; }
+
+    let bytes;
+    if (raw.startsWith('0x') || raw.startsWith('0X')) {
+      bytes = raw.slice(2).replace(/\s+/g,'').match(/.{1,2}/g).map(b=>parseInt(b,16));
+    } else {
+      bytes = Array.from(raw).map(c=>c.charCodeAt(0));
+    }
+    const result = bytes.map(b => b ^ keyVal);
+    const hex = result.map(b=>b.toString(16).padStart(2,'0')).join(' ');
+    const text = result.map(b => b >= 32 && b < 127 ? String.fromCharCode(b) : '.').join('');
+    setOut('xor-out', `Hex:  ${hex}\nText: ${text}`);
+  } catch { err('xor-out', 'Error processing input'); }
+}
+
+// ---- Morse ----
+const MORSE = {A:'.-',B:'-...',C:'-.-.',D:'-..',E:'.',F:'..-.',G:'--.',H:'....',I:'..',J:'.---',K:'-.-',L:'.-..',M:'--',N:'-.',O:'---',P:'.--.',Q:'--.-',R:'.-.',S:'...',T:'-',U:'..-',V:'...-',W:'.--',X:'-..-',Y:'-.--',Z:'--..',0:'-----',1:'.----',2:'..---',3:'...--',4:'....-',5:'.....',6:'-....',7:'--...',8:'---..',9:'----.'};
+const MORSE_R = Object.fromEntries(Object.entries(MORSE).map(([k,v])=>[v,k]));
+function morseEncode() {
+  ok('morse-out');
+  setOut('morse-out', document.getElementById('morse-in').value.toUpperCase().split('').map(c => c === ' ' ? '/' : (MORSE[c]||'?')).join(' '));
+}
+function morseDecode() {
+  ok('morse-out');
+  setOut('morse-out', document.getElementById('morse-in').value.trim().split(' / ').map(word => word.split(' ').map(s => MORSE_R[s]||'?').join('')).join(' '));
+}
+
+// ---- Hash ----
+async function computeHashes() {
+  const text = document.getElementById('hash-in').value;
+  const enc = new TextEncoder();
+  const data = enc.encode(text);
+  const algos = [['SHA-256','h-sha256'],['SHA-1','h-sha1'],['SHA-512','h-sha512'],['SHA-384','h-sha384']];
+  for (const [algo, id] of algos) {
+    const buf = await crypto.subtle.digest(algo, data);
+    ok(id);
+    setOut(id, Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join(''));
+  }
+}
+function clearHashes() { ['h-sha256','h-sha1','h-sha512','h-sha384'].forEach(id => { ok(id); setOut(id,'—'); }); }
+
+// ---- Base Converter ----
+function convertBase() {
+  try {
+    ok('num-out');
+    const from = parseInt(document.getElementById('num-from').value);
+    const to   = parseInt(document.getElementById('num-to').value);
+    const val  = parseInt(document.getElementById('num-in').value.trim(), from);
+    if (isNaN(val)) { err('num-out', 'Invalid input for selected base'); return; }
+    setOut('num-out', val.toString(to).toUpperCase());
+  } catch { err('num-out', 'Conversion error'); }
+}
+
+// ---- ASCII ↔ Decimal ----
+function asciiToDec() {
+  ok('ascii-out');
+  setOut('ascii-out', Array.from(document.getElementById('ascii-in').value).map(c=>c.charCodeAt(0)).join(' '));
+}
+function decToAscii() {
+  try {
+    ok('ascii-out');
+    setOut('ascii-out', document.getElementById('ascii-in').value.trim().split(/\s+/).map(n=>String.fromCharCode(parseInt(n))).join(''));
+  } catch { err('ascii-out', 'Invalid input'); }
+}
+
+// ---- Challenge Tracker ----
+let challenges = JSON.parse(localStorage.getItem('ctf-challenges') || '[]');
+
+function saveChallenges() { localStorage.setItem('ctf-challenges', JSON.stringify(challenges)); }
+
+const ALLOWED_CATS = ['web','pwn','crypto','rev','forensics','misc'];
+
+function renderTracker() {
+  const list = document.getElementById('challenge-list');
+  list.innerHTML = '';
+  challenges.forEach((ch, i) => {
+    const li = document.createElement('li');
+    li.className = 'challenge-item ' + (ch.solved ? 'solved' : 'unsolved');
+
+    const chk = document.createElement('input');
+    chk.type = 'checkbox'; chk.className = 'solve-check'; chk.checked = !!ch.solved;
+    chk.addEventListener('change', () => toggleSolve(i));
+
+    const safeCat = ALLOWED_CATS.includes(ch.cat) ? ch.cat : 'misc';
+    const catBadge = document.createElement('span');
+    catBadge.className = 'cat-badge cat-' + safeCat;
+    catBadge.textContent = safeCat;
+
+    const nameSpan = document.createElement('span');
+    nameSpan.className = 'challenge-name';
+    nameSpan.textContent = ch.name;
+
+    const ptsSpan = document.createElement('span');
+    ptsSpan.className = 'challenge-pts';
+    ptsSpan.textContent = ch.pts + ' pts';
+
+    const delBtn = document.createElement('button');
+    delBtn.className = 'btn danger';
+    delBtn.style.cssText = 'padding:2px 8px;font-size:0.75rem;';
+    delBtn.textContent = '✕';
+    delBtn.addEventListener('click', () => removeChallenge(i));
+
+    li.append(chk, catBadge, nameSpan, ptsSpan, delBtn);
+    list.appendChild(li);
+  });
+  updateStats();
+}
+
+function updateStats() {
+  const total  = challenges.length;
+  const solved = challenges.filter(c => c.solved).length;
+  const pts    = challenges.filter(c => c.solved).reduce((s,c)=>s+c.pts,0);
+  const pct    = total ? Math.round(solved/total*100) : 0;
+
+  const bar = document.getElementById('stat-bar');
+  bar.textContent = '';
+  [
+    [total, 'Total', ''],
+    [solved, 'Solved', 'color:var(--accent2)'],
+    [total-solved, 'Unsolved', 'color:var(--warn)'],
+    [pts, 'Points', ''],
+  ].forEach(([val, lbl, style]) => {
+    const stat = document.createElement('div'); stat.className = 'stat';
+    const num  = document.createElement('div'); num.className = 'num';
+    if (style) num.style.cssText = style;
+    num.textContent = val;
+    const lblEl = document.createElement('div'); lblEl.className = 'lbl';
+    lblEl.textContent = lbl;
+    stat.append(num, lblEl);
+    bar.appendChild(stat);
+  });
+
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-label').textContent = `Progress: ${pct}% (${solved} / ${total})`;
+}
+
+function addChallenge() {
+  const name = document.getElementById('ch-name').value.trim();
+  if (!name) return;
+  challenges.push({ name, cat: document.getElementById('ch-cat').value, pts: parseInt(document.getElementById('ch-pts').value)||100, solved: false });
+  document.getElementById('ch-name').value = '';
+  saveChallenges();
+  renderTracker();
+}
+
+function toggleSolve(i) { challenges[i].solved = !challenges[i].solved; saveChallenges(); renderTracker(); }
+function removeChallenge(i) { challenges.splice(i,1); saveChallenges(); renderTracker(); }
+
+renderTracker();
+</script>
+</body>
+</html>
