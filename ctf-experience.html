@@ -101,6 +101,40 @@ body{background:var(--bg);color:var(--t);font-family:system-ui,sans-serif;displa
 .complete-box .pts{color:var(--a);font-size:1.5rem;font-weight:700;margin:.75rem 0}
 .close-btn{background:var(--g);border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:.9rem;margin-top:.75rem;padding:.65rem 2rem;font-weight:700}
 .retry-btn{background:var(--s);border:1px solid var(--b);border-radius:8px;color:var(--t);cursor:pointer;font-size:.9rem;margin-top:.5rem;padding:.65rem 2rem;font-weight:700;width:100%}
+
+/* --- Q7-12 (Auth / Web security) additions --- */
+.cat-web{background:#fff1e5;color:#bc4c00;border-color:#ffcaa3}
+.cat-auth{background:#e7f7f4;color:#0b7285;border-color:#8fdbd0}
+.notice{background:#fff8e1;border:1px solid #e6c200;border-radius:8px;color:#6e4700;font-size:.8rem;line-height:1.65;padding:.7rem .9rem}
+.notice strong{color:#9a6700}
+.demo{background:var(--s);border:1px solid var(--b);border-radius:8px;padding:.9rem;display:flex;flex-direction:column;gap:.6rem}
+.demo .field{display:flex;flex-direction:column}
+.demo label{font-size:.78rem;color:var(--m);font-weight:600;margin-bottom:.25rem}
+.demo .fixed{font-family:monospace;font-size:.9rem;color:var(--t);background:var(--bg);border:1px solid var(--b);border-radius:8px;padding:.6rem .7rem}
+.demo-input{width:100%;background:var(--bg);border:2px solid var(--b);border-radius:10px;color:var(--t);font-family:monospace;font-size:.95rem;padding:.7rem .9rem;outline:none;transition:border-color .2s}
+.demo-input:focus{border-color:var(--a)}
+.demo-btn{background:var(--a);border:none;border-radius:10px;color:#fff;cursor:pointer;font-size:.95rem;padding:.8rem;font-weight:700;width:100%}
+.demo-btn:active{opacity:.85}
+.demo-out{display:none;font-size:.83rem;line-height:1.6;border-radius:8px;padding:.7rem .9rem;word-break:break-word}
+.demo-out.show{display:block}
+.demo-out.ng{background:#ffebe9;border:1px solid #ffb8b0;color:var(--r)}
+.demo-out.ok{background:#dafbe1;border:1px solid #82e09a;color:var(--g)}
+.sql-view{background:#1f2328;color:#e6edf3;border-radius:8px;padding:.7rem .8rem;font-family:monospace;font-size:.76rem;word-break:break-all;line-height:1.6;white-space:pre-wrap}
+.reveal{display:none;background:#ddf4ff;border:2px solid var(--a);border-radius:10px;padding:.85rem;text-align:center;font-size:.85rem;line-height:1.6}
+.reveal.show{display:block}
+.reveal .flag-val{font-family:monospace;font-weight:700;color:var(--a);font-size:1rem;word-break:break-all;margin-top:.35rem;user-select:all;-webkit-user-select:all}
+.user-list{display:flex;flex-direction:column;gap:.4rem}
+.user-card{background:var(--bg);border:1px solid var(--b);border-radius:8px;padding:.55rem .8rem;font-size:.88rem;display:flex;gap:.7rem;align-items:center;word-break:break-all}
+.user-card .uid{font-family:monospace;color:var(--m);font-size:.82rem}
+.choice{display:flex;align-items:flex-start;gap:.55rem;padding:.45rem .2rem;font-size:.85rem;line-height:1.5}
+.choice input{width:20px;height:20px;flex-shrink:0;margin-top:.1rem}
+.qr-box{display:flex;flex-direction:column;align-items:center;gap:.6rem;margin-top:.4rem}
+.qr-box .qr-img{width:200px;height:200px;background:#fff;padding:10px;border:1px solid var(--b);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.qr-box .qr-img img,.qr-box .qr-img canvas{width:180px!important;height:180px!important;image-rendering:pixelated}
+.admin-card{background:var(--bg);border:1px solid var(--b);border-radius:8px;padding:.9rem;font-size:.85rem;line-height:1.95}
+.admin-card .k{color:var(--m);display:inline-block;min-width:6.4em}
+.admin-card .attr{color:var(--a);font-family:monospace;font-weight:700;word-break:break-all}
+.step-label{font-size:.8rem;font-weight:700;color:var(--a);margin-top:.4rem}
 </style>
 </head>
 <body>
@@ -294,6 +328,284 @@ body{background:var(--bg);color:var(--t);font-family:system-ui,sans-serif;displa
     </div>
   </div>
 
+  <!-- Q7 Weak Password -->
+  <div class="screen" id="s7">
+    <div class="row-top">
+      <span class="cat cat-auth">Auth</span>
+      <div class="diff"><span class="star" style="color:#e6c200">&#9733;</span><span class="star" style="color:#e6c200">&#9733;</span><span class="star" style="color:var(--b)">&#9733;</span></div>
+      <span class="pts-badge">100 pts</span>
+    </div>
+    <div class="q-title">推測されやすいパスワード</div>
+    <div class="concept">&#128161; <strong>Auth</strong> — 個人情報から作ったパスワードは、本人には覚えやすくても他人には推測されやすくなります。</div>
+    <div class="notice">&#9888;&#65039; この演習は、用意されたデモ環境内でセキュリティの考え方を学ぶためのものです。実際のWebサイトや他人のアカウントに対して、同じような入力やログイン試行を行ってはいけません。</div>
+    <p class="desc">ある架空サービスから、ユーザーのプロフィール情報が漏えいしました。このユーザーは、覚えやすさを優先して、プロフィール情報を組み合わせたパスワードを使っているようです。ログインできるパスワードを推測して、Flagを見つけましょう。</p>
+    <div class="challenge-box">&#128272; 漏えいしたプロフィール情報<br>User ID：00012<br>Name：haru<br>Birth year：2004<br>Favorite word：sakura</div>
+    <div class="demo">
+      <div class="field"><label>User ID</label><div class="fixed">00012</div></div>
+      <div class="field"><label for="pw7">Password</label><input class="demo-input" id="pw7" placeholder="パスワードを推測" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="40"/></div>
+      <button class="demo-btn" onclick="login7()">Login</button>
+      <div class="demo-out" id="o7"></div>
+    </div>
+    <div class="reveal" id="rv7">&#9989; ログイン成功！ 下のFlagを入力欄に入れて Submit しよう。<div class="flag-val">CTF{dont_use_guessable_passwords}</div></div>
+    <button class="hint-btn" onclick="toggleHint('h7')">&#128161; ヒントを見る</button>
+    <div class="hint-text" id="h7">
+      <ol>
+        <li>人に知られやすい情報をパスワードに使うのは危険です。</li>
+        <li>好きな言葉と年号を組み合わせているかもしれません。</li>
+        <li><code>sakura</code> と <code>2004</code> をつなげてみましょう。</li>
+      </ol>
+    </div>
+    <div class="flag-wrap">
+      <input class="flag-input" id="f7" placeholder="CTF{...}" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="80"/>
+      <button class="sub-btn" onclick="check(7,'CTF{dont_use_guessable_passwords}')">Submit</button>
+    </div>
+    <div class="result" id="r7"></div>
+    <div class="special-msg" id="special7">
+      <div class="flag-accepted">FLAG ACCEPTED.</div>
+      名前・誕生日・好きな言葉・学校名・会社名などから作ったパスワードは、本人には覚えやすい一方で、他人にも推測されやすくなります。個人情報が漏えいすると、攻撃者はその情報からパスワード候補を作ることがあります。<br><br>対策として、個人情報を含まない長く推測されにくいパスワード、パスワードマネージャー、サービスごとに異なるパスワード、多要素認証（MFA）が重要です。
+    </div>
+  </div>
+
+  <!-- Q8 Password Reuse -->
+  <div class="screen" id="s8">
+    <div class="row-top">
+      <span class="cat cat-auth">Auth</span>
+      <div class="diff"><span class="star" style="color:#e6c200">&#9733;</span><span class="star" style="color:#e6c200">&#9733;</span><span class="star" style="color:var(--b)">&#9733;</span></div>
+      <span class="pts-badge">100 pts</span>
+    </div>
+    <div class="q-title">使い回されたパスワード</div>
+    <div class="concept">&#128161; <strong>Auth</strong> — 1つのサービスから漏れたパスワードを、別のサービスでも使い回していると、同じパスワードでログインされてしまいます。</div>
+    <div class="notice">&#9888;&#65039; この演習はデモ環境内での疑似体験です。実際のサービスや他人のアカウントに、漏えいしたパスワードを試してはいけません。</div>
+    <p class="desc">ある架空サービスでパスワードが1つ漏えいしました。別の社内ポータルでは、ユーザーIDが5桁の番号で管理されています。このパスワードを使い回しているユーザーを探して、Flagを見つけましょう。</p>
+    <div class="challenge-box">&#128273; 漏えいパスワード：sakura2004<br>&#128100; 対象ID範囲：00001〜00010</div>
+    <div class="demo">
+      <div class="field"><label for="uid8">User ID</label><input class="demo-input" id="uid8" placeholder="00001〜00010" inputmode="numeric" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="5"/></div>
+      <div class="field"><label for="pw8">Password</label><input class="demo-input" id="pw8" value="sakura2004" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="40"/></div>
+      <button class="demo-btn" onclick="login8()">Login</button>
+      <div class="demo-out" id="o8"></div>
+    </div>
+    <div class="reveal" id="rv8">&#9989; ログイン成功！ 下のFlagを入力欄に入れて Submit しよう。<div class="flag-val">CTF{password_reuse_is_dangerous}</div></div>
+    <button class="hint-btn" onclick="toggleHint('h8')">&#128161; ヒントを見る</button>
+    <div class="hint-text" id="h8">
+      <ol>
+        <li>ユーザーIDは 00001〜00010 の範囲です。</li>
+        <li>漏えいしたパスワードを使い回しているIDが1つあります。</li>
+        <li><code>00005</code> を試してみましょう。</li>
+      </ol>
+    </div>
+    <div class="flag-wrap">
+      <input class="flag-input" id="f8" placeholder="CTF{...}" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="80"/>
+      <button class="sub-btn" onclick="check(8,'CTF{password_reuse_is_dangerous}')">Submit</button>
+    </div>
+    <div class="result" id="r8"></div>
+    <div class="special-msg" id="special8">
+      <div class="flag-accepted">FLAG ACCEPTED.</div>
+      1つのサービスから漏れたパスワードが別のサービスでも使い回されていると、同じパスワードでログインされる可能性があります。1つのパスワードを複数のアカウントに試す攻撃は、パスワードスプレー攻撃やクレデンシャルスタッフィングにつながります。<br><br>対策として、サービスごとに異なるパスワードを使うこと、パスワードマネージャーを使うこと、多要素認証（MFA）を有効にすることが重要です。
+    </div>
+  </div>
+
+  <!-- Q9 After the Leak -->
+  <div class="screen" id="s9">
+    <div class="row-top">
+      <span class="cat cat-auth">Auth</span>
+      <div class="diff"><span class="star" style="color:#e6c200">&#9733;</span><span class="star" style="color:#e6c200">&#9733;</span><span class="star" style="color:var(--b)">&#9733;</span></div>
+      <span class="pts-badge">100 pts</span>
+    </div>
+    <div class="q-title">漏えい後の対応</div>
+    <div class="concept">&#128161; <strong>Auth</strong> — パスワードが漏れたときは、被害を広げないための正しい対応が大切です。MFAは「もう一つのカギ」になります。</div>
+    <p class="desc">あるアカウントのパスワードが漏えいした可能性があります。被害を広げないために、取るべき対応を確認しましょう。次の対応候補のうち、<strong>正しい対応の数</strong>を入力してください。</p>
+    <div class="demo">
+      <label class="choice"><input type="checkbox"/><span>パスワードを変更する</span></label>
+      <label class="choice"><input type="checkbox"/><span>同じパスワードを使っている他サービスのパスワードも変更する</span></label>
+      <label class="choice"><input type="checkbox"/><span>MFAを有効にする</span></label>
+      <label class="choice"><input type="checkbox"/><span>漏えいしたパスワードをそのまま使い続ける</span></label>
+      <label class="choice"><input type="checkbox"/><span>SNSで「このパスワードを使っていた」と投稿する</span></label>
+      <label class="choice"><input type="checkbox"/><span>不審なログイン履歴がないか確認する</span></label>
+      <div class="field"><label for="cnt9">正しい対応の数</label><input class="demo-input" id="cnt9" placeholder="数字を入力" inputmode="numeric" autocomplete="off" maxlength="2"/></div>
+      <button class="demo-btn" onclick="check9()">確認する</button>
+      <div class="demo-out" id="o9"></div>
+    </div>
+    <div class="reveal" id="rv9">
+      <div class="notice" style="text-align:left">&#9888;&#65039; このQRコードは演習用です。認証アプリに登録する必要はありません。読み取って表示されたFlagを入力してください。</div>
+      <div class="qr-box"><div class="qr-img" id="qr9"></div><div style="font-size:.78rem;color:var(--m)">スマホのカメラでこのQRを読み取ってみよう</div></div>
+    </div>
+    <button class="hint-btn" onclick="toggleHint('h9')">&#128161; ヒントを見る</button>
+    <div class="hint-text" id="h9">
+      <ol>
+        <li>漏えい後は、まず被害を広げないことが重要です。</li>
+        <li>使い回しているパスワードがあれば、他のサービスも危険です。</li>
+        <li>正しい対応は4つあります。</li>
+      </ol>
+    </div>
+    <div class="flag-wrap">
+      <input class="flag-input" id="f9" placeholder="CTF{...}" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="80"/>
+      <button class="sub-btn" onclick="check(9,'CTF{enable_mfa_after_password_leak}')">Submit</button>
+    </div>
+    <div class="result" id="r9"></div>
+    <div class="special-msg" id="special9">
+      <div class="flag-accepted">FLAG ACCEPTED.</div>
+      パスワードが漏えいした場合は、パスワード変更・使い回し先の変更・不審なログイン履歴の確認・MFAの有効化が重要です。MFAはパスワードの代わりではなく、パスワードに追加する「もう一つのカギ」です。<br><br>パスワードが漏れても、MFAが有効なら被害を抑えられる可能性があります。
+    </div>
+  </div>
+
+  <!-- Q10 SQL Injection: Login Bypass -->
+  <div class="screen" id="s10">
+    <div class="row-top">
+      <span class="cat cat-web">Web</span>
+      <div class="diff"><span class="star" style="color:#e6c200">&#9733;</span><span class="star" style="color:#e6c200">&#9733;</span><span class="star" style="color:#e6c200">&#9733;</span></div>
+      <span class="pts-badge">150 pts</span>
+    </div>
+    <div class="q-title">SQL Injection：ログインをすり抜けよう</div>
+    <div class="concept">&#128161; <strong>Web</strong> — 入力値がSQL文にそのままつながると、ログイン条件そのものが変わってしまうことがあります。</div>
+    <div class="notice">&#9888;&#65039; これは用意されたデモ環境内の疑似体験です。実際のWebサイトやサービスに、同じような入力やログイン試行を行ってはいけません。</div>
+    <p class="desc">脆弱なデモ用ログイン画面があります。入力した値が下のSQL文に組み込まれます。ユーザー名とパスワードを工夫して、Flagを見つけましょう。</p>
+    <div class="sql-view" id="sql10">SELECT * FROM users
+WHERE username = ''
+  AND password = '';</div>
+    <div class="demo">
+      <div class="field"><label for="u10">Username</label><input class="demo-input" id="u10" placeholder="admin" oninput="upd10()" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="40"/></div>
+      <div class="field"><label for="p10">Password</label><input class="demo-input" id="p10" placeholder="password" oninput="upd10()" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="40"/></div>
+      <button class="demo-btn" onclick="login10()">Login</button>
+      <div class="demo-out" id="o10"></div>
+    </div>
+    <div class="reveal" id="rv10">&#9989; 認証をすり抜けました！ 下のFlagを入力欄に入れて Submit しよう。<div class="flag-val">CTF{sqli_login_bypass}</div></div>
+    <button class="hint-btn" onclick="toggleHint('h10')">&#128161; ヒントを見る</button>
+    <div class="hint-text" id="h10">
+      <ol>
+        <li>ログイン判定では、入力されたユーザー名とパスワードが条件として使われています。</li>
+        <li>条件が常に正しくなるような入力を考えてみましょう。</li>
+        <li>パスワード欄に <code>' OR '1'='1</code> を試してみましょう。</li>
+      </ol>
+    </div>
+    <div class="flag-wrap">
+      <input class="flag-input" id="f10" placeholder="CTF{...}" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="80"/>
+      <button class="sub-btn" onclick="check(10,'CTF{sqli_login_bypass}')">Submit</button>
+    </div>
+    <div class="result" id="r10"></div>
+    <div class="special-msg" id="special10">
+      <div class="flag-accepted">FLAG ACCEPTED.</div>
+      SQLインジェクションは、入力値がSQL文の一部として解釈されてしまうことで、本来とは違う条件で処理される脆弱性です。実際の開発では、SQL文に入力値を直接連結せず、プレースホルダやプリペアドステートメントを使って対策します。<br><br>この入力を実際のWebサイトやサービスに対して試してはいけません。
+    </div>
+  </div>
+
+  <!-- Q11 SQL Injection: Search Bypass -->
+  <div class="screen" id="s11">
+    <div class="row-top">
+      <span class="cat cat-web">Web</span>
+      <div class="diff"><span class="star" style="color:#e6c200">&#9733;</span><span class="star" style="color:#e6c200">&#9733;</span><span class="star" style="color:#e6c200">&#9733;</span></div>
+      <span class="pts-badge">150 pts</span>
+    </div>
+    <div class="q-title">SQL Injection：検索条件をすり抜けよう</div>
+    <div class="concept">&#128161; <strong>Web</strong> — SQLインジェクションはログイン画面だけでなく、検索フォームでも起こります。</div>
+    <div class="notice">&#9888;&#65039; これはデモ環境内の疑似体験です。実際のサイトの検索やフォームに、同じような入力を行ってはいけません。</div>
+    <p class="desc">商品検索のデモ画面があります。通常の検索では公開中の商品だけが表示されます。検索窓の裏側でも入力値からSQLが作られているとしたら、条件を変えられるかもしれません。隠されたレコードを表示してみましょう。（まずは <code>note</code> などで検索してみよう）</p>
+    <div class="demo">
+      <div class="field"><label for="q11">検索キーワード</label><input class="demo-input" id="q11" placeholder="例: note" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="40"/></div>
+      <button class="demo-btn" onclick="search11()">Search</button>
+    </div>
+    <div class="user-list" id="res11"></div>
+    <button class="hint-btn" onclick="toggleHint('h11')">&#128161; ヒントを見る</button>
+    <div class="hint-text" id="h11">
+      <ol>
+        <li>10問目で使った考え方は、ログイン画面以外にも使えるかもしれません。</li>
+        <li>検索窓の裏側でも、入力値を使ってSQLが作られていることがあります。</li>
+        <li>条件が常に正しくなるような入力（例：<code>' OR '1'='1</code>）を試しましょう。</li>
+      </ol>
+    </div>
+    <div class="flag-wrap">
+      <input class="flag-input" id="f11" placeholder="CTF{...}" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="80"/>
+      <button class="sub-btn" onclick="check(11,'CTF{sqli_is_not_only_login}')">Submit</button>
+    </div>
+    <div class="result" id="r11"></div>
+    <div class="special-msg" id="special11">
+      <div class="flag-accepted">FLAG ACCEPTED.</div>
+      SQLインジェクションはログイン画面だけの問題ではありません。検索・一覧表示・絞り込み・管理画面など、入力値を使ってデータを取り出す場所では同じ考え方が関係します。<br><br>入力値をSQL文に直接つなげないことが重要です。
+    </div>
+  </div>
+
+  <!-- Q12 Risk Chain -->
+  <div class="screen" id="s12">
+    <div class="row-top">
+      <span class="cat cat-web">Web</span>
+      <div class="diff">
+        <span class="star" style="color:#e6c200">&#9733;</span>
+        <span class="star" style="color:#e6c200">&#9733;</span>
+        <span class="star" style="color:#e6c200">&#9733;</span>
+        <span class="star" style="color:#e6c200">&#9733;</span>
+      </div>
+      <span class="pts-badge">200 pts</span>
+    </div>
+    <div class="q-title">Risk Chain：つながるリスク</div>
+    <div class="concept">&#128161; <strong>Challenge</strong> — 7〜11問目の総括。小さなリスクが連鎖すると、重要情報に到達されてしまうことを体験します。</div>
+    <div class="notice">&#9888;&#65039; これはデモ環境内の疑似体験です。検索・ログイン試行・SQLインジェクションを、許可された演習以外の実際のサービスに対して行ってはいけません。</div>
+    <p class="desc">ある架空の社内ポータルで、不審な挙動が報告されました。検索画面・ログイン画面・ユーザー管理画面を調査して、Flagを探しましょう。</p>
+    <div class="challenge-box">&#128273; 漏えいした可能性のあるパスワード：spring2026<br>&#127919; Flagは、ログインできたユーザーの管理画面の属性情報に隠されています。</div>
+
+    <div class="step-label">STEP 1 &middot; ユーザー検索</div>
+    <div class="demo">
+      <div class="field"><label for="s12q">User ID / Name</label><input class="demo-input" id="s12q" placeholder="ID または 名前" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="40"/></div>
+      <button class="demo-btn" onclick="search12()">Search</button>
+    </div>
+    <div class="user-list" id="res12"></div>
+
+    <div class="step-label">STEP 2 &middot; ログイン</div>
+    <div class="demo">
+      <div class="field"><label for="l12u">User ID</label><input class="demo-input" id="l12u" placeholder="5桁のID" inputmode="numeric" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="5"/></div>
+      <div class="field"><label for="l12p">Password</label><input class="demo-input" id="l12p" placeholder="パスワード" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="40"/></div>
+      <button class="demo-btn" onclick="login12()">Login</button>
+      <div class="demo-out" id="o12"></div>
+    </div>
+
+    <div class="reveal" id="adm12" style="text-align:left">
+      <div class="step-label" style="margin-top:0">STEP 3 &middot; &#128273; 管理画面</div>
+      <div class="admin-card">
+        <span class="k">User ID</span>00005<br>
+        <span class="k">Name</span>mina<br>
+        <span class="k">Department</span>recruit<br>
+        <span class="k">Role</span>user<br>
+        <span class="k">Note</span>新卒説明会デモ用アカウント<br>
+        <span class="k">Attribute</span><span class="attr">CTF{small_risks_chain_together}</span>
+      </div>
+      <div style="font-size:.8rem;color:var(--m);margin-top:.5rem">Attribute の値が Flag です。下の入力欄に入れて Submit しよう。</div>
+    </div>
+
+    <button class="hint-btn" onclick="toggleHint('h12')">&#128161; ヒントを見る</button>
+    <div class="hint-text" id="h12">
+      <ol>
+        <li>まずはユーザー検索画面で、ユーザーIDの候補を集めてみましょう。</li>
+        <li>検索画面でも、SQLインジェクションが使えるかもしれません。</li>
+        <li>漏えいパスワード <code>spring2026</code> を、見つけたユーザーIDに試してみましょう。</li>
+        <li>ログインできたら、管理画面の属性情報を確認してください。</li>
+      </ol>
+    </div>
+    <div class="flag-wrap">
+      <input class="flag-input" id="f12" placeholder="CTF{...}" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="80"/>
+      <button class="sub-btn" onclick="check(12,'CTF{small_risks_chain_together}')">Submit</button>
+    </div>
+    <div class="result" id="r12"></div>
+    <div class="special-msg" id="special12">
+      <div class="flag-accepted">FLAG ACCEPTED.</div>
+      複数の小さなリスクがつながることで、本来見えてはいけない情報に到達できてしまう流れを体験しました。<br><br>
+      <strong>今回のリスク：</strong>
+      <ul style="padding-left:1.2rem;margin:.3rem 0">
+        <li>検索フォームでSQLインジェクションが可能だった</li>
+        <li>ユーザーID一覧が取得できた</li>
+        <li>漏えいパスワードを使い回しているユーザーがいた</li>
+        <li>MFAが有効ではなかった</li>
+        <li>管理画面の属性情報に重要情報が含まれていた</li>
+      </ul>
+      <strong>対策：</strong>
+      <ul style="padding-left:1.2rem;margin:.3rem 0">
+        <li>入力値をSQL文に直接連結しない（プリペアドステートメントを使う）</li>
+        <li>パスワードの使い回しを避ける</li>
+        <li>MFAを有効化する</li>
+        <li>不要な個人情報や機密情報を画面に表示しない</li>
+        <li>ログイン試行の監視やレート制限を行う</li>
+      </ul>
+      <div style="margin-top:.6rem;font-weight:700;color:var(--a)">セキュリティ事故は、1つの大きな穴だけでなく、小さな弱点がつながって起きることがあります。</div>
+    </div>
+  </div>
+
 </div>
 
 <div class="nav">
@@ -312,8 +624,10 @@ body{background:var(--bg);color:var(--t);font-family:system-ui,sans-serif;displa
   </div>
 </div>
 
+<script src="qrcode.min.js"></script>
 <script>
-const TOTAL=6,PTS={1:50,2:75,3:75,4:100,5:100,6:150};
+const TOTAL=12,PTS={1:50,2:75,3:75,4:100,5:100,6:150,7:100,8:100,9:100,10:150,11:150,12:200};
+const TOTALPTS=Object.values(PTS).reduce((a,b)=>a+b,0);
 const solved={};let cur=1;
 
 const dotsEl=document.getElementById('dots');
@@ -349,7 +663,7 @@ function check(n,correct){
     if(!solved[n]){solved[n]=true;updateScore();saveState(n,inp.value.trim());}
     inp.className='flag-input ok';
     res.className='result ok';res.textContent='✓ 正解！ +'+PTS[n]+'pts';
-    if(n===6){document.getElementById('special6').classList.add('show');}
+    const sp=document.getElementById('special'+n);if(sp)sp.classList.add('show');
     updateDots();
   }else{
     inp.className='flag-input ng';
@@ -377,7 +691,7 @@ function loadState(){
       inp.className='flag-input ok';
       res.className='result ok';
       res.innerHTML='&#10003; 正解！ +'+PTS[n]+'pts';
-      if(n===6)document.getElementById('special6').classList.add('show');
+      const sp=document.getElementById('special'+n);if(sp)sp.classList.add('show');
     }
     updateScore();
   }catch(e){}
@@ -423,8 +737,15 @@ function resetAll(){
     if(inp){inp.value='';inp.className='flag-input';}
     if(res){res.className='result';res.innerHTML='';}
   }
-  const sp=document.getElementById('special6');
-  if(sp) sp.classList.remove('show');
+  document.querySelectorAll('.special-msg').forEach(s=>s.classList.remove('show'));
+  document.querySelectorAll('.reveal').forEach(r=>r.classList.remove('show'));
+  document.querySelectorAll('.demo-out').forEach(o=>{o.className='demo-out';o.textContent='';});
+  document.querySelectorAll('.demo-input').forEach(i=>{i.value='';});
+  document.querySelectorAll('.choice input').forEach(c=>{c.checked=false;});
+  const pw8=document.getElementById('pw8');if(pw8)pw8.value='sakura2004';
+  ['res11','res12'].forEach(id=>{const e=document.getElementById(id);if(e)e.innerHTML='';});
+  const q9=document.getElementById('qr9');if(q9){q9.innerHTML='';delete q9.dataset.done;}
+  if(typeof upd10==='function')upd10();
   document.getElementById('complete').classList.remove('show');
   document.getElementById('score').textContent='0 pts';
   cur=1;
@@ -441,11 +762,87 @@ function showComplete(){
   document.getElementById('complete-icon').textContent=allClear?'🎉':'👍';
   document.getElementById('complete-title').textContent=allClear?'全問クリア！':cnt+' / '+TOTAL+' 問正解';
   document.getElementById('complete-msg').textContent=allClear?'おめでとうございます。':'残りの問題にもぜひ挑戦してみてください。';
-  document.getElementById('final-pts').textContent='総得点: '+pts+' / 550 pts';
+  document.getElementById('final-pts').textContent='総得点: '+pts+' / '+TOTALPTS+' pts';
   const box=document.querySelector('.complete-box');
   box.style.borderColor=allClear?'var(--g)':'var(--a)';
   document.querySelector('.complete-box h2').style.color=allClear?'var(--g)':'var(--a)';
   document.getElementById('complete').classList.add('show');
+}
+
+// --- Q7-12 interactive demos (all pseudo / in-browser only) ---
+function setOut(id,ok,msg){const o=document.getElementById(id);o.className='demo-out '+(ok?'ok':'ng')+' show';o.textContent=msg;}
+
+// detect a SQL tautology in pseudo input (educational only)
+function sqliTaut(s){
+  const t=(s||'').toLowerCase().replace(/\s+/g,' ');
+  return /'\s*or\s*'?1'?\s*=\s*'?1/.test(t)||/\bor\s+1\s*=\s*1\b/.test(t);
+}
+
+function login7(){
+  const v=document.getElementById('pw7').value.trim();
+  if(v==='sakura2004'){setOut('o7',true,'✓ ログインに成功しました。');document.getElementById('rv7').classList.add('show');}
+  else setOut('o7',false,'✗ ログインできませんでした。プロフィール情報を組み合わせてみましょう。');
+}
+
+function login8(){
+  const id=document.getElementById('uid8').value.trim();
+  const pw=document.getElementById('pw8').value.trim();
+  if(pw!=='sakura2004'){setOut('o8',false,'✗ パスワードが違います。漏えいしたパスワードを使い回しているユーザーを探しましょう。');return;}
+  if(id==='00005'){setOut('o8',true,'✓ ログイン成功！このユーザーはパスワードを使い回していました。');document.getElementById('rv8').classList.add('show');}
+  else setOut('o8',false,'✗ '+(id||'(未入力)')+' ではログインできませんでした。別のID（00001〜00010）を試しましょう。');
+}
+
+function check9(){
+  const v=document.getElementById('cnt9').value.trim();
+  if(v==='4'){setOut('o9',true,'✓ 正解です。正しい対応は4つ。MFA設定画面を表示します。');document.getElementById('rv9').classList.add('show');renderQR9();}
+  else setOut('o9',false,'✗ もう一度、危険な対応を除いて数えてみましょう。');
+}
+function renderQR9(){
+  const box=document.getElementById('qr9');
+  if(box.dataset.done||typeof QRCode==='undefined')return;
+  new QRCode(box,{text:'CTF{enable_mfa_after_password_leak}',width:180,height:180,correctLevel:QRCode.CorrectLevel.M});
+  box.dataset.done='1';
+}
+
+function upd10(){
+  const u=document.getElementById('u10').value,p=document.getElementById('p10').value;
+  document.getElementById('sql10').textContent="SELECT * FROM users\nWHERE username = '"+u+"'\n  AND password = '"+p+"';";
+}
+function login10(){
+  const u=document.getElementById('u10').value,p=document.getElementById('p10').value;
+  if(sqliTaut(p)||sqliTaut(u)){setOut('o10',true,'✓ ログイン成功！ 条件が常に真になり、認証をすり抜けました。');document.getElementById('rv10').classList.add('show');}
+  else setOut('o10',false,'✗ ログイン失敗。条件が常に正しくなるような入力を考えてみましょう。');
+}
+
+function search11(){
+  const q=document.getElementById('q11').value.trim();
+  const box=document.getElementById('res11');box.innerHTML='';
+  const pub=['security note','network card','log handbook'];
+  let items;
+  if(sqliTaut(q))items=pub.concat(['flag record  →  CTF{sqli_is_not_only_login}']);
+  else if(q==='')items=[];
+  else items=pub.filter(x=>x.indexOf(q.toLowerCase())>=0);
+  if(!items.length){const d=document.createElement('div');d.className='demo-out ng show';d.textContent=q===''?'検索キーワードを入力してください。':'該当する公開商品はありません。';box.appendChild(d);return;}
+  items.forEach(t=>{const d=document.createElement('div');d.className='user-card';d.textContent=t;box.appendChild(d);});
+}
+
+const USERS12=[['00001','alice'],['00002','bob'],['00003','charlie'],['00004','haru'],['00005','mina']];
+function search12(){
+  const q=document.getElementById('s12q').value.trim().toLowerCase();
+  const box=document.getElementById('res12');box.innerHTML='';
+  let list;
+  if(sqliTaut(q))list=USERS12;
+  else if(q===''){const d=document.createElement('div');d.className='demo-out ng show';d.textContent='検索キーワードを入力してください。';box.appendChild(d);return;}
+  else list=USERS12.filter(u=>u[0].indexOf(q)>=0||u[1].indexOf(q)>=0);
+  if(!list.length){const d=document.createElement('div');d.className='demo-out ng show';d.textContent='該当ユーザーが見つかりません。条件が常に正しくなる入力を試すと…？';box.appendChild(d);return;}
+  list.forEach(u=>{const c=document.createElement('div');c.className='user-card';const s=document.createElement('span');s.className='uid';s.textContent=u[0];const n=document.createElement('span');n.textContent=u[1];c.appendChild(s);c.appendChild(n);box.appendChild(c);});
+}
+function login12(){
+  const id=document.getElementById('l12u').value.trim();
+  const pw=document.getElementById('l12p').value.trim();
+  if(pw!=='spring2026'){setOut('o12',false,'✗ パスワードが違います。漏えいパスワードを使ってみましょう。');return;}
+  if(id==='00005'){setOut('o12',true,'✓ ログイン成功！管理画面を表示します。');document.getElementById('adm12').classList.add('show');}
+  else setOut('o12',false,'✗ '+(id||'(未入力)')+' ではログインできません。使い回しユーザーを探しましょう。');
 }
 
 loadState();updateDots();updateNav();
