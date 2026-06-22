@@ -22,7 +22,10 @@ body{background:var(--bg);color:var(--t);font-family:system-ui,sans-serif;displa
 .hd-title{flex:1;text-align:center;font-size:.95rem;font-weight:700;color:var(--t)}
 .hd-score{color:var(--a);font-size:.9rem;font-weight:700}
 
-.dots{display:flex;justify-content:center;gap:.5rem;padding:.65rem;flex-shrink:0;background:var(--bg)}
+.progress{display:flex;flex-direction:column;align-items:center;gap:.3rem;padding:.5rem .6rem;flex-shrink:0;background:var(--bg)}
+.qnum{font-size:.78rem;font-weight:700;color:var(--m);letter-spacing:.02em}
+.qnum b{color:var(--a)}
+.dots{display:flex;justify-content:center;flex-wrap:wrap;gap:.45rem}
 .dot{width:10px;height:10px;border-radius:50%;background:var(--b);transition:background .3s}
 .dot.active{background:var(--a)}
 .dot.solved{background:var(--g)}
@@ -145,7 +148,10 @@ body{background:var(--bg);color:var(--t);font-family:system-ui,sans-serif;displa
   <div class="hd-score" id="score">0 pts</div>
 </div>
 
-<div class="dots" id="dots"></div>
+<div class="progress">
+  <div class="qnum" id="qnum"><b>1</b> / 12 問</div>
+  <div class="dots" id="dots"></div>
+</div>
 
 <div class="screens" id="screens">
 
@@ -324,7 +330,7 @@ body{background:var(--bg);color:var(--t);font-family:system-ui,sans-serif;displa
     <div class="result" id="r6"></div>
     <div class="special-msg" id="special6">
       <div class="flag-accepted">FLAG ACCEPTED.</div>
-      おめでとうございます！正解です！
+      おめでとうございます！前半（1〜6問目）クリアです。<br><br>このあとに <strong>7〜12問目</strong>（パスワード・MFA・SQLインジェクションなどのセキュリティ体験）が続きます。下の「次へ →」で挑戦を続けましょう。
     </div>
   </div>
 
@@ -633,7 +639,7 @@ const solved={};let cur=1;
 const dotsEl=document.getElementById('dots');
 for(let i=1;i<=TOTAL;i++){const d=document.createElement('div');d.className='dot';d.id='dot'+i;dotsEl.appendChild(d);}
 
-function updateDots(){for(let i=1;i<=TOTAL;i++){const d=document.getElementById('dot'+i);d.className='dot'+(solved[i]?' solved':i===cur?' active':'');}}
+function updateDots(){for(let i=1;i<=TOTAL;i++){const d=document.getElementById('dot'+i);d.className='dot'+(solved[i]?' solved':i===cur?' active':'');}const q=document.getElementById('qnum');if(q){const n=Object.keys(solved).length;q.innerHTML='<b>'+cur+'</b> / '+TOTAL+' 問'+(n?'（解答済 '+n+'）':'');}}
 
 function updateNav(){
   document.getElementById('btn-prev').disabled=cur<=1;
