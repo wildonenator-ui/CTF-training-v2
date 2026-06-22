@@ -138,6 +138,13 @@ body{background:var(--bg);color:var(--t);font-family:system-ui,sans-serif;displa
 .admin-card .k{color:var(--m);display:inline-block;min-width:6.4em}
 .admin-card .attr{color:var(--a);font-family:monospace;font-weight:700;word-break:break-all}
 .step-label{font-size:.8rem;font-weight:700;color:var(--a);margin-top:.4rem}
+.setup-head{font-weight:700;font-size:.95rem;color:var(--t);margin-bottom:.1rem;display:flex;align-items:center;gap:.4rem}
+.setup-step{background:var(--bg);border:1px solid var(--b);border-radius:8px;padding:.8rem;margin-top:.6rem;display:flex;flex-direction:column;gap:.5rem}
+.setup-step-title{font-weight:700;font-size:.85rem;color:var(--a)}
+.setup-step .field{display:flex;flex-direction:column}
+.setup-step label{font-size:.78rem;color:var(--m);font-weight:600;margin-bottom:.25rem}
+.setup-step .fixed{font-family:monospace;font-size:.9rem;color:var(--t);background:var(--s);border:1px solid var(--b);border-radius:8px;padding:.55rem .7rem}
+.setup-done{font-size:.82rem;color:var(--g);font-weight:600}
 </style>
 </head>
 <body>
@@ -431,9 +438,20 @@ body{background:var(--bg);color:var(--t);font-family:system-ui,sans-serif;displa
       <button class="demo-btn" onclick="check9()">確認する</button>
       <div class="demo-out" id="o9"></div>
     </div>
-    <div class="reveal" id="rv9">
-      <div class="notice" style="text-align:left">&#9888;&#65039; このQRコードは演習用です。認証アプリに登録する必要はありません。読み取って表示されたFlagを入力してください。</div>
-      <div class="qr-box"><div class="qr-img" id="qr9"></div><div style="font-size:.78rem;color:var(--m)">スマホのカメラでこのQRを読み取ってみよう</div></div>
+    <div class="reveal" id="rv9" style="text-align:left">
+      <div class="setup-head">&#128274; アカウント セキュリティ設定</div>
+      <div class="setup-step">
+        <div class="setup-step-title">&#9312; 新しいパスワードを設定</div>
+        <div class="field"><label>新しいパスワード</label><div class="fixed">&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;</div></div>
+        <div class="field"><label>新しいパスワード（確認）</label><div class="fixed">&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;</div></div>
+        <div class="setup-done">&#9989; パスワードを更新しました</div>
+      </div>
+      <div class="setup-step">
+        <div class="setup-step-title">&#9313; 多要素認証（MFA）を設定</div>
+        <div style="font-size:.82rem;color:var(--m);line-height:1.6">認証アプリ（Authenticator）で下のQRコードを読み取り、表示された6桁コードを登録します。</div>
+        <div class="qr-box"><div class="qr-img" id="qr9"></div></div>
+        <div class="notice">&#9888;&#65039; このQRコードは演習用です。実際に認証アプリへ登録する必要はありません。読み取って表示されたFlagを入力してください。</div>
+      </div>
     </div>
     <button class="hint-btn" onclick="toggleHint('h9')">&#128161; ヒントを見る</button>
     <div class="hint-text" id="h9">
@@ -506,7 +524,7 @@ WHERE username = ''
     <div class="notice">&#9888;&#65039; これはデモ環境内の疑似体験です。実際のサイトの検索やフォームに、同じような入力を行ってはいけません。</div>
     <p class="desc">商品検索のデモ画面があります。通常の検索では公開中の商品だけが表示されます。検索窓の裏側でも入力値からSQLが作られているとしたら、条件を変えられるかもしれません。隠されたレコードを表示してみましょう。（まずは <code>note</code> などで検索してみよう）</p>
     <div class="demo">
-      <div class="field"><label for="q11">検索キーワード</label><input class="demo-input" id="q11" placeholder="例: note" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="40"/></div>
+      <div class="field"><label for="q11">検索キーワード</label><input class="demo-input" id="q11" value="security note" placeholder="例: note" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="40"/></div>
       <button class="demo-btn" onclick="search11()">Search</button>
     </div>
     <div class="user-list" id="res11"></div>
@@ -575,15 +593,6 @@ WHERE username = ''
       <div style="font-size:.8rem;color:var(--m);margin-top:.5rem">Attribute の値が Flag です。下の入力欄に入れて Submit しよう。</div>
     </div>
 
-    <button class="hint-btn" onclick="toggleHint('h12')">&#128161; ヒントを見る</button>
-    <div class="hint-text" id="h12">
-      <ol>
-        <li>まずはユーザー検索画面で、ユーザーIDの候補を集めてみましょう。</li>
-        <li>検索画面でも、SQLインジェクションが使えるかもしれません。</li>
-        <li>漏えいパスワード <code>spring2026</code> を、見つけたユーザーIDに試してみましょう。</li>
-        <li>ログインできたら、管理画面の属性情報を確認してください。</li>
-      </ol>
-    </div>
     <div class="flag-wrap">
       <input class="flag-input" id="f12" placeholder="CTF{...}" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="80"/>
       <button class="sub-btn" onclick="check(12,'CTF{small_risks_chain_together}')">Submit</button>
@@ -749,6 +758,7 @@ function resetAll(){
   document.querySelectorAll('.demo-input').forEach(i=>{i.value='';});
   document.querySelectorAll('.choice input').forEach(c=>{c.checked=false;});
   const pw8=document.getElementById('pw8');if(pw8)pw8.value='sakura2004';
+  const q11=document.getElementById('q11');if(q11)q11.value='security note';
   ['res11','res12'].forEach(id=>{const e=document.getElementById(id);if(e)e.innerHTML='';});
   const q9=document.getElementById('qr9');if(q9){q9.innerHTML='';delete q9.dataset.done;}
   if(typeof upd10==='function')upd10();
