@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="format-detection" content="telephone=no,address=no,email=no"/>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'self';">
+<title>CTF体験</title>
+<style>
+:root{
+  --bg:#ffffff;--s:#f6f8fa;--b:#d0d7de;
+  --a:#0969da;--g:#1a7f37;--r:#cf222e;
+  --t:#1f2328;--m:#656d76;--warn:#9a6700;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--t);font-family:system-ui,sans-serif;display:flex;flex-direction:column}
+
+.hd{background:var(--bg);border-bottom:1px solid var(--b);padding:.75rem 1rem;display:flex;align-items:center;gap:.75rem;flex-shrink:0;box-shadow:0 1px 3px #0000000d}
+.hd a{color:var(--a);font-size:.85rem;text-decoration:none;font-weight:500}
+.hd-title{flex:1;text-align:center;font-size:.95rem;font-weight:700;color:var(--t)}
+.hd-score{color:var(--a);font-size:.9rem;font-weight:700}
+
+.dots{display:flex;justify-content:center;gap:.5rem;padding:.65rem;flex-shrink:0;background:var(--bg)}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--b);transition:background .3s}
+.dot.active{background:var(--a)}
+.dot.solved{background:var(--g)}
+
+.screens{flex:1;position:relative;overflow:hidden}
+.screen{position:absolute;inset:0;overflow-y:auto;padding:1.25rem 1rem 2rem;display:flex;flex-direction:column;gap:.9rem;transition:transform .35s cubic-bezier(.4,0,.2,1);transform:translateX(100%)}
+.screen.active{transform:translateX(0)}
+.screen.past{transform:translateX(-100%)}
+
+.row-top{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+.cat{border-radius:20px;font-size:.72rem;padding:3px 10px;font-weight:700;border:1px solid}
+.cat-forensics{background:#fff8e1;color:#9a6700;border-color:#e6c200}
+.cat-crypto{background:#ddf4ff;color:#0550ae;border-color:#80ccff}
+.cat-cipher{background:#fbefff;color:#6639ba;border-color:#d8b4fe}
+.cat-number{background:#dafbe1;color:#1a7f37;border-color:#82e09a}
+.cat-misc{background:#ffebe9;color:#cf222e;border-color:#ffb8b0}
+.diff{display:flex;gap:2px}
+.star{font-size:.65rem}
+.pts-badge{margin-left:auto;background:var(--s);border:1px solid var(--b);border-radius:12px;color:var(--m);font-size:.78rem;padding:2px 9px;font-weight:600}
+
+.q-title{font-size:1.2rem;font-weight:700;color:var(--t);line-height:1.4}
+
+.concept{background:#ddf4ff;border:1px solid #80ccff;border-radius:8px;padding:.85rem;font-size:.85rem;line-height:1.6;color:#0550ae}
+
+.desc{color:var(--m);font-size:.88rem;line-height:1.6}
+
+.challenge-box{background:var(--s);border:1px solid var(--b);border-radius:8px;padding:.9rem;font-family:monospace;font-size:.83rem;word-break:break-all;line-height:1.7;color:var(--t)}
+
+.select-area{background:var(--s);border:1px solid var(--b);border-radius:8px;padding:1rem;font-size:.9rem;cursor:text;user-select:text;-webkit-user-select:text;line-height:1.8;color:var(--t)}
+.hidden-flag{color:var(--s);background:var(--s);user-select:text;-webkit-user-select:text;font-family:monospace}
+
+.hint-btn{background:var(--s);border:1px solid var(--b);border-radius:8px;color:var(--warn);cursor:pointer;font-size:.83rem;padding:.55rem 1rem;text-align:left;width:100%;font-weight:600;display:flex;align-items:center;gap:.4rem}
+.hint-btn:active{background:var(--b)}
+.hint-text{display:none;background:#fff8e1;border:1px solid #e6c200;border-radius:8px;color:#6e4700;font-size:.84rem;line-height:1.7;padding:.8rem 1rem}
+.hint-text.show{display:block}
+.hint-text ol{padding-left:1.2rem;margin-top:.3rem}
+.hint-text li{margin-bottom:.25rem}
+.hint-text code{background:#fff3cc;border-radius:3px;font-family:monospace;font-size:.85em;padding:1px 4px}
+
+.flag-wrap{display:flex;gap:.5rem}
+.flag-input{flex:1;background:var(--bg);border:2px solid var(--b);border-radius:10px;color:var(--t);font-family:monospace;font-size:.9rem;padding:.7rem .9rem;outline:none;transition:border-color .2s}
+.flag-input:focus{border-color:var(--a)}
+.flag-input.ok{border-color:var(--g);background:#dafbe1}
+.flag-input.ng{border-color:var(--r);background:#ffebe9}
+.sub-btn{background:var(--a);border:none;border-radius:10px;color:#fff;cursor:pointer;font-size:.9rem;padding:.7rem 1.1rem;white-space:nowrap;font-weight:700}
+.sub-btn:active{opacity:.85}
+
+.hint-text .run-btn{background:#9a6700;color:#fff;border:none}
+.hint-text .run-out{background:#fff3cc;border-color:#e6c200;color:#6e4700;margin-top:.4rem}
+.result{border-radius:8px;font-size:.85rem;padding:.6rem .9rem;display:none;font-weight:500}
+.result.ok{display:block;background:#dafbe1;color:var(--g);border:1px solid #82e09a}
+.result.ng{display:block;background:#ffebe9;color:var(--r);border:1px solid #ffb8b0}
+.special-msg{display:none;background:#ddf4ff;border:2px solid var(--a);border-radius:10px;padding:1rem 1.1rem;margin-top:.6rem;font-size:.85rem;line-height:1.8;color:var(--t)}
+.special-msg.show{display:block}
+.special-msg .flag-accepted{color:var(--a);font-size:1rem;font-weight:700;letter-spacing:.05em;margin-bottom:.5rem}
+.hidden-binary{color:var(--s)!important;background:var(--s);user-select:text;-webkit-user-select:text;font-family:monospace;font-size:.75rem;word-break:break-all;line-height:1.8}
+.hidden-binary a,.hidden-binary a:link,.hidden-binary a:visited{color:var(--s)!important;text-decoration:none!important;pointer-events:none}
+
+.run-btn{background:var(--t);border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:.83rem;padding:.55rem 1rem;font-weight:600;display:flex;align-items:center;gap:.4rem}
+.run-btn:active{opacity:.8}
+.run-out{background:var(--s);border:1px solid var(--b);border-radius:8px;color:var(--g);font-family:monospace;font-size:.9rem;padding:.65rem .9rem;display:none;font-weight:600}
+
+.nav{display:flex;gap:.75rem;padding:.85rem 1rem;flex-shrink:0;background:var(--bg);border-top:1px solid var(--b)}
+.nav-btn{background:var(--s);border:1px solid var(--b);border-radius:10px;color:var(--t);cursor:pointer;flex:1;font-size:.9rem;padding:.7rem;font-weight:600}
+.nav-btn:active{background:var(--b)}
+.nav-btn.primary{background:var(--a);border-color:var(--a);color:#fff}
+.nav-btn.primary:active{opacity:.85}
+.nav-btn:disabled{opacity:.35;cursor:default}
+
+.complete{display:none;position:fixed;inset:0;background:#000a;z-index:50;align-items:center;justify-content:center}
+.complete.show{display:flex}
+.complete-box{background:var(--bg);border:2px solid var(--g);border-radius:16px;padding:2rem 1.5rem;text-align:center;max-width:300px;width:90%;box-shadow:0 8px 32px #0002}
+.complete-box .trophy{font-size:3rem}
+.complete-box h2{color:var(--g);font-size:1.4rem;margin:.5rem 0}
+.complete-box p{color:var(--m);font-size:.88rem;line-height:1.6}
+.complete-box .pts{color:var(--a);font-size:1.5rem;font-weight:700;margin:.75rem 0}
+.close-btn{background:var(--g);border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:.9rem;margin-top:.75rem;padding:.65rem 2rem;font-weight:700}
+.retry-btn{background:var(--s);border:1px solid var(--b);border-radius:8px;color:var(--t);cursor:pointer;font-size:.9rem;margin-top:.5rem;padding:.65rem 2rem;font-weight:700;width:100%}
+</style>
+</head>
+<body>
+
+<div class="hd">
+  <a href="index.html">&#8592; Toolkit</a>
+  <div class="hd-title">CTF体験</div>
+  <div class="hd-score" id="score">0 pts</div>
+</div>
+
+<div class="dots" id="dots"></div>
+
+<div class="screens" id="screens">
+
+  <!-- Q1 Forensics -->
+  <div class="screen active" id="s1">
+    <div class="row-top">
+      <span class="cat cat-forensics">Forensics</span>
+      <div class="diff"><span class="star" style="color:#e6c200">&#9733;</span><span class="star" style="color:var(--b)">&#9733;</span><span class="star" style="color:var(--b)">&#9733;</span></div>
+      <span class="pts-badge">50 pts</span>
+    </div>
+    <div class="q-title">白い紙に白いペンで書いたら読める？</div>
+    <div class="concept">&#128161; <strong>Forensics</strong> — 隠されたデータを見つける技術。見えているものがすべてとは限りません。</div>
+    <p class="desc">このページのどこかにフラグが隠されています。よく探してみよう。</p>
+    <div class="select-area">CTFはセキュリティの知識を競う競技です。<span class="hidden-flag">CTF{hidden_in_plain_sight}</span>様々な技術を駆使してフラグを見つけましょう。</div>
+    <button class="hint-btn" onclick="toggleHint('h1')">&#128161; ヒントを見る</button>
+    <div class="hint-text" id="h1">
+      <strong>手順：</strong>
+      <ol>
+        <li>上の灰色のボックス内のテキストを<strong>長押し</strong>する</li>
+        <li>「すべて選択」をタップ（または指でドラッグして全選択）</li>
+        <li>選択すると背景と同じ色で隠れていた文字が見える</li>
+        <li>見えた <code>CTF{...}</code> の文字をフラグとして入力しよう</li>
+      </ol>
+    </div>
+    <div class="flag-wrap">
+      <input class="flag-input" id="f1" placeholder="CTF{...}" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="80"/>
+      <button class="sub-btn" onclick="check(1,'CTF{hidden_in_plain_sight}')">Submit</button>
+    </div>
+    <div class="result" id="r1"></div>
+  </div>
+
+  <!-- Q2 Crypto -->
+  <div class="screen" id="s2">
+    <div class="row-top">
+      <span class="cat cat-crypto">Crypto</span>
+      <div class="diff"><span class="star" style="color:#e6c200">&#9733;</span><span class="star" style="color:var(--b)">&#9733;</span><span class="star" style="color:var(--b)">&#9733;</span></div>
+      <span class="pts-badge">75 pts</span>
+    </div>
+    <div class="q-title">ベース64って聞いたことある？</div>
+    <div class="concept">&#128161; <strong>Crypto</strong> — データは様々な方法で変換・エンコードされることがあります。元に戻す方法を見つけましょう。</div>
+    <p class="desc">不審な文字列が見つかった。これは何を意味するのだろう？</p>
+    <div class="challenge-box">Q1RGe2Jhc2U2NF9pc19mdW59</div>
+    <button class="hint-btn" onclick="toggleHint('h2')">&#128161; ヒントを見る</button>
+    <div class="hint-text" id="h2">
+      <strong>Base64とは？</strong>データをアルファベットと数字だけで表現するしくみ。メールやWebでよく使われます。<br><br>
+      <strong>手順：</strong>
+      <ol>
+        <li>画面左上の「← Toolkit」をタップ</li>
+        <li>「Encode / Decode」タブを選ぶ</li>
+        <li>「Base64」欄に上の文字列を貼り付ける</li>
+        <li>「Decode」ボタンを押す</li>
+        <li>表示された <code>CTF{...}</code> がフラグ</li>
+      </ol>
+    </div>
+    <div class="flag-wrap">
+      <input class="flag-input" id="f2" placeholder="CTF{...}" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="80"/>
+      <button class="sub-btn" onclick="check(2,'CTF{base64_is_fun}')">Submit</button>
+    </div>
+    <div class="result" id="r2"></div>
+  </div>
+
+  <!-- Q3 Cipher -->
+  <div class="screen" id="s3">
+    <div class="row-top">
+      <span class="cat cat-cipher">Cipher</span>
+      <div class="diff"><span class="star" style="color:#e6c200">&#9733;</span><span class="star" style="color:var(--b)">&#9733;</span><span class="star" style="color:var(--b)">&#9733;</span></div>
+      <span class="pts-badge">75 pts</span>
+    </div>
+    <div class="q-title">ロットサーティンって知ってる？</div>
+    <div class="concept">&#128161; <strong>Cipher</strong> — 暗号化とは情報を変換して第三者に読めなくすること。古典的な手法の多くはアルファベットの置き換えを使います。</div>
+    <p class="desc">読めないメッセージが届いた。何かのルールで変換されているようだ。</p>
+    <div class="challenge-box">PGS{ebg13_vf_rnfl}</div>
+    <button class="hint-btn" onclick="toggleHint('h3')">&#128161; ヒントを見る</button>
+    <div class="hint-text" id="h3">
+      <strong>ROT13とは？</strong>アルファベットを13文字ずらす暗号。AはN、BはO…のように入れ替えます。<br><br>
+      <strong>手順：</strong>
+      <ol>
+        <li>画面左上の「← Toolkit」をタップ</li>
+        <li>「Cipher」タブを選ぶ</li>
+        <li>「Caesar / ROT Cipher」欄に上の文字列を貼り付ける</li>
+        <li>Shift が <code>13</code> になっていることを確認して「Decrypt」を押す</li>
+        <li>表示された <code>CTF{...}</code> がフラグ</li>
+      </ol>
+    </div>
+    <div class="flag-wrap">
+      <input class="flag-input" id="f3" placeholder="CTF{...}" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="80"/>
+      <button class="sub-btn" onclick="check(3,'CTF{rot13_is_easy}')">Submit</button>
+    </div>
+    <div class="result" id="r3"></div>
+  </div>
+
+  <!-- Q4 Number -->
+  <div class="screen" id="s4">
+    <div class="row-top">
+      <span class="cat cat-number">Number</span>
+      <div class="diff"><span class="star" style="color:#e6c200">&#9733;</span><span class="star" style="color:#e6c200">&#9733;</span><span class="star" style="color:var(--b)">&#9733;</span></div>
+      <span class="pts-badge">100 pts</span>
+    </div>
+    <div class="q-title">0と1だけで文字が書けるって知ってた？</div>
+    <div class="concept">&#128161; <strong>Number</strong> — コンピュータはすべての情報を数値で扱います。数値の表現方法を変えると、別の意味が現れることがあります。</div>
+    <p class="desc">0と1だけで構成された奇妙な数列が見つかった。これは一体何だろう？</p>
+    <div class="challenge-box">01000011 01010100 01000110 01111011 01100010 01101001 01101110 01100001 01110010 01111001 01111101</div>
+    <button class="hint-btn" onclick="toggleHint('h4')">&#128161; ヒントを見る</button>
+    <div class="hint-text" id="h4">
+      <strong>2進数とは？</strong>コンピュータは0と1しか扱えません。8個の0と1の組み合わせで1文字を表します。<br><br>
+      <strong>手順：</strong>
+      <ol>
+        <li>画面左上の「← Toolkit」をタップ</li>
+        <li>「Encode / Decode」タブを選ぶ</li>
+        <li>「Binary」欄に上の数列を貼り付ける</li>
+        <li>「Binary → Text」ボタンを押す</li>
+        <li>表示された <code>CTF{...}</code> がフラグ</li>
+      </ol>
+    </div>
+    <div class="flag-wrap">
+      <input class="flag-input" id="f4" placeholder="CTF{...}" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="80"/>
+      <button class="sub-btn" onclick="check(4,'CTF{binary}')">Submit</button>
+    </div>
+    <div class="result" id="r4"></div>
+  </div>
+
+  <!-- Q5 Misc -->
+  <div class="screen" id="s5">
+    <div class="row-top">
+      <span class="cat cat-misc">Misc</span>
+      <div class="diff"><span class="star" style="color:#e6c200">&#9733;</span><span class="star" style="color:#e6c200">&#9733;</span><span class="star" style="color:var(--b)">&#9733;</span></div>
+      <span class="pts-badge">100 pts</span>
+    </div>
+    <div class="q-title">プログラムって、動かしてみないとわからない？</div>
+    <div class="concept">&#128161; <strong>Misc</strong> — CTFでは様々な形でフラグが隠されます。コードを読み解くことも重要なスキルです。</div>
+    <p class="desc">数値の羅列と不思議なコードが見つかった。動かすと何が起きるだろう？</p>
+    <div class="challenge-box">[68,85,71,124,107,98,119,98,116,100,115,<br>106,113,117,96,103,118,111,126]<br>.map(x=&gt;String.fromCharCode(x-1)).join('')</div>
+    <button class="hint-btn" onclick="toggleHint('h5')">&#128161; ヒントを見る</button>
+    <div class="hint-text" id="h5">
+      <strong>プログラムとは？</strong>コンピュータへの命令の列です。このコードは数値を文字に変換しています。<br><br>
+      下のボタンで実際に動かしてみよう。
+      <button class="run-btn" onclick="runCode()" style="margin-top:.6rem">&#9654;&nbsp; 実行してみる</button>
+      <div class="run-out" id="run-out"></div>
+      <ol style="margin-top:.6rem">
+        <li>上の「実行してみる」ボタンを押す</li>
+        <li>コードが実行されて結果が表示される</li>
+        <li>表示された <code>CTF{...}</code> がフラグ</li>
+      </ol>
+      <strong style="display:block;margin-top:.5rem">コードの意味：</strong>数値の配列から各値に-1して文字に変換、つなげて文字列にしています。
+    </div>
+    <div class="flag-wrap">
+      <input class="flag-input" id="f5" placeholder="CTF{...}" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="80"/>
+      <button class="sub-btn" onclick="check(5,'CTF{javascript_fun}')">Submit</button>
+    </div>
+    <div class="result" id="r5"></div>
+  </div>
+
+  <!-- Q6 Challenge -->
+  <div class="screen" id="s6">
+    <div class="row-top">
+      <span class="cat cat-crypto">Crypto</span>
+      <div class="diff">
+        <span class="star" style="color:#e6c200">&#9733;</span>
+        <span class="star" style="color:#e6c200">&#9733;</span>
+        <span class="star" style="color:#e6c200">&#9733;</span>
+        <span class="star" style="color:#e6c200">&#9733;</span>
+      </div>
+      <span class="pts-badge">150 pts</span>
+    </div>
+    <div class="q-title">ここまでの総括 〜変換は一度だけとは限らない〜</div>
+    <div class="concept">&#128161; <strong>Challenge</strong> — ここまで学んだ変換技術をすべて組み合わせると、答えにたどり着けます。</div>
+    <p class="desc">ここまでの体験をフル活用して、正解にたどり着いてください。</p>
+    <div class="select-area">
+      このページのどこかに手がかりが隠されています。<br>
+      <span class="hidden-binary">01000100 00110001 01000101 01010100 01110010 00110000 01111001 01110011 01001100 01001010 00110001 01110011 01001101 01001010 00110101 01100100 01101111 00110011 01111001 01100011 01101111 01111010 01110001 01110011 01000100 00110001 01000101 01010100 01110011 01000100 00111101 00111101</span>
+    </div>
+    <div class="flag-wrap">
+      <input class="flag-input" id="f6" placeholder="CTF{...}" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="80"/>
+      <button class="sub-btn" onclick="check(6,'CTF{I_am_enjoying_CTF}')">Submit</button>
+    </div>
+    <div class="result" id="r6"></div>
+    <div class="special-msg" id="special6">
+      <div class="flag-accepted">FLAG ACCEPTED.</div>
+      おめでとうございます！正解です！
+    </div>
+  </div>
+
+</div>
+
+<div class="nav">
+  <button class="nav-btn" id="btn-prev" onclick="go(-1)" disabled>&#8592; 前へ</button>
+  <button class="nav-btn primary" id="btn-next" onclick="go(1)">次へ &#8594;</button>
+</div>
+
+<div class="complete" id="complete">
+  <div class="complete-box">
+    <div class="trophy" id="complete-icon">&#127881;</div>
+    <h2 id="complete-title">全問クリア！</h2>
+    <p id="complete-msg">おめでとうございます。</p>
+    <div class="pts" id="final-pts"></div>
+    <button class="close-btn" onclick="document.getElementById('complete').classList.remove('show')">Close</button>
+    <button class="retry-btn" onclick="resetAll()">&#8635; もう一回体験する</button>
+  </div>
+</div>
+
+<script>
+const TOTAL=6,PTS={1:50,2:75,3:75,4:100,5:100,6:150};
+const solved={};let cur=1;
+
+const dotsEl=document.getElementById('dots');
+for(let i=1;i<=TOTAL;i++){const d=document.createElement('div');d.className='dot';d.id='dot'+i;dotsEl.appendChild(d);}
+
+function updateDots(){for(let i=1;i<=TOTAL;i++){const d=document.getElementById('dot'+i);d.className='dot'+(solved[i]?' solved':i===cur?' active':'');}}
+
+function updateNav(){
+  document.getElementById('btn-prev').disabled=cur<=1;
+  const n=document.getElementById('btn-next');
+  if(cur>=TOTAL){n.textContent='完了';n.onclick=()=>showComplete();}
+  else{n.textContent='次へ →';n.onclick=()=>go(1);}
+}
+
+function go(dir){
+  const next=cur+dir;if(next<1||next>TOTAL)return;
+  document.getElementById('s'+cur).classList.remove('active');
+  if(dir>0)document.getElementById('s'+cur).classList.add('past');
+  else document.getElementById('s'+cur).classList.remove('past');
+  cur=next;
+  document.getElementById('s'+cur).classList.remove('past');
+  void document.getElementById('s'+cur).offsetWidth;
+  document.getElementById('s'+cur).classList.add('active');
+  document.getElementById('s'+cur).scrollTop=0;
+  updateDots();updateNav();
+}
+
+function toggleHint(id){document.getElementById(id).classList.toggle('show');}
+
+function check(n,correct){
+  const inp=document.getElementById('f'+n),res=document.getElementById('r'+n);
+  if(inp.value.trim().toLowerCase()===correct.toLowerCase()){
+    if(!solved[n]){solved[n]=true;updateScore();saveState(n,inp.value.trim());}
+    inp.className='flag-input ok';
+    res.className='result ok';res.textContent='✓ 正解！ +'+PTS[n]+'pts';
+    if(n===6){document.getElementById('special6').classList.add('show');}
+    updateDots();
+  }else{
+    inp.className='flag-input ng';
+    res.className='result ng';res.textContent='✗ 不正解。もう一度試してみよう。';
+    setTimeout(()=>{inp.className='flag-input';},900);
+  }
+}
+
+function saveState(n,val){
+  const data=JSON.parse(localStorage.getItem('ctf-exp')||'{}');
+  data[n]=val;
+  localStorage.setItem('ctf-exp',JSON.stringify(data));
+}
+
+function loadState(){
+  try{
+    const data=JSON.parse(localStorage.getItem('ctf-exp')||'{}');
+    for(const k in data){
+      const n=parseInt(k);
+      const inp=document.getElementById('f'+n);
+      const res=document.getElementById('r'+n);
+      if(!inp||!res)continue;
+      solved[n]=true;
+      inp.value=data[k];
+      inp.className='flag-input ok';
+      res.className='result ok';
+      res.innerHTML='&#10003; 正解！ +'+PTS[n]+'pts';
+      if(n===6)document.getElementById('special6').classList.add('show');
+    }
+    updateScore();
+  }catch(e){}
+}
+
+function updateScore(){
+  document.getElementById('score').textContent=Object.keys(solved).reduce((s,k)=>s+PTS[k],0)+' pts';
+}
+
+function decodeB64(){
+  const el=document.getElementById('b64-out');
+  el.textContent=decodeURIComponent(escape(atob('Q1RGe2Jhc2U2NF9pc19mdW59')));
+  el.style.display='block';
+}
+
+function decodeRot13(){
+  const el=document.getElementById('rot-out');
+  el.textContent='PGS{ebg13_vf_rnfl}'.replace(/[a-zA-Z]/g,c=>{
+    const b=c<='Z'?65:97;
+    return String.fromCharCode((c.charCodeAt(0)-b+13)%26+b);
+  });
+  el.style.display='block';
+}
+
+function decodeBin(){
+  const el=document.getElementById('bin-out');
+  el.textContent='01000011 01010100 01000110 01111011 01100010 01101001 01101110 01100001 01110010 01111001 01111101'
+    .trim().split(/\s+/).map(b=>String.fromCharCode(parseInt(b,2))).join('');
+  el.style.display='block';
+}
+
+function runCode(){
+  const out=[68,85,71,124,107,98,119,98,116,100,115,106,113,117,96,103,118,111,126].map(x=>String.fromCharCode(x-1)).join('');
+  const el=document.getElementById('run-out');el.textContent=out;el.style.display='block';
+}
+
+function resetAll(){
+  localStorage.removeItem('ctf-exp');
+  for(const k in solved) delete solved[k];
+  for(let i=1;i<=TOTAL;i++){
+    const inp=document.getElementById('f'+i);
+    const res=document.getElementById('r'+i);
+    if(inp){inp.value='';inp.className='flag-input';}
+    if(res){res.className='result';res.innerHTML='';}
+  }
+  const sp=document.getElementById('special6');
+  if(sp) sp.classList.remove('show');
+  document.getElementById('complete').classList.remove('show');
+  document.getElementById('score').textContent='0 pts';
+  cur=1;
+  document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active','past');});
+  document.getElementById('s1').classList.add('active');
+  document.querySelectorAll('.hint-text').forEach(h=>h.classList.remove('show'));
+  updateDots();updateNav();
+}
+
+function showComplete(){
+  const cnt=Object.keys(solved).length;
+  const pts=Object.keys(solved).reduce((s,k)=>s+PTS[k],0);
+  const allClear=cnt===TOTAL;
+  document.getElementById('complete-icon').textContent=allClear?'🎉':'👍';
+  document.getElementById('complete-title').textContent=allClear?'全問クリア！':cnt+' / '+TOTAL+' 問正解';
+  document.getElementById('complete-msg').textContent=allClear?'おめでとうございます。':'残りの問題にもぜひ挑戦してみてください。';
+  document.getElementById('final-pts').textContent='総得点: '+pts+' / 550 pts';
+  const box=document.querySelector('.complete-box');
+  box.style.borderColor=allClear?'var(--g)':'var(--a)';
+  document.querySelector('.complete-box h2').style.color=allClear?'var(--g)':'var(--a)';
+  document.getElementById('complete').classList.add('show');
+}
+
+loadState();updateDots();updateNav();
+</script>
+</body>
+</html>
